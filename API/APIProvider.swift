@@ -1,4 +1,5 @@
 import OpenAPIURLSession
+import Foundation
 
 struct APIProvider {
     static func makeDefault() -> YandexScheduleAPI {

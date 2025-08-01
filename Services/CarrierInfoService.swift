@@ -26,11 +26,6 @@ final class CarrierInfoService: CarrierInfoServiceProtocol {
                     system: system,
                     lang: "ru_RU",
                     format: "json"
-                ),
-                headers: .init(
-                    accept: [
-                        .init(contentType: .init(rawValue: "application/json")!)
-                    ]
                 )
             )
         )

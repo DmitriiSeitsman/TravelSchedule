@@ -25,9 +25,6 @@ final class NearestCityService: NearestCityServiceProtocol {
                     distance: distance,
                     lang: "ru_RU",
                     format: "json"
-                ),
-                headers: .init(
-                    accept: [.init(contentType: .init(rawValue: "application/json")!)]
                 )
             )
         )

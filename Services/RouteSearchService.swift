@@ -15,26 +15,22 @@ final class RouteSearchService: RouteSearchServiceProtocol {
         self.apikey = apikey
     }
 
-    func getRoutes(from: String, to: String) async throws -> Components.Schemas.Segments
- {
-     let today = DateFormatterForYandex.request.string(from: Date())
+    func getRoutes(from: String, to: String) async throws -> Components.Schemas.Segments {
+        let today = DateFormatterForYandex.request.string(from: Date())
 
-     let response = try await client.getSchedualBetweenStations(
-         .init(
-             query: .init(
-                 apikey: apikey,
-                 from: from,
-                 to: to,
-                 format: "json",
-                 date: today,
-                 transport_types: "plane",
-                 limit: 10
-             ),
-             headers: .init(
-                 accept: [.init(contentType: .init(rawValue: "application/json")!)]
-             )
-         )
-     )
+        let response = try await client.getSchedualBetweenStations(
+            .init(
+                query: .init(
+                    apikey: apikey,
+                    from: from,
+                    to: to,
+                    format: "json",
+                    date: today,
+                    transport_types: "plane",
+                    limit: 10
+                )
+            )
+        )
 
         switch response {
         case .ok(let result):
@@ -52,5 +48,4 @@ final class RouteSearchService: RouteSearchServiceProtocol {
             throw URLError(.badServerResponse)
         }
     }
-
 }

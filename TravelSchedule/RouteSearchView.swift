@@ -13,7 +13,6 @@ struct RouteSearchView: View {
                 .font(.title)
                 .bold()
 
-            // 🔽 Информация о фиксированных параметрах
             VStack(alignment: .leading, spacing: 4) {
                 Text("Параметры запроса:")
                     .font(.subheadline)

@@ -28,4 +28,22 @@ enum DateFormatterForYandex {
         formatter.timeZone = .current
         return formatter
     }()
+    
+    /// Формат времени для UI: "HH:mm"
+    static let time: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm"
+        formatter.locale = Locale(identifier: "ru_RU")
+        formatter.timeZone = .current
+        return formatter
+    }()
+    
+    /// Формат для ответа Яндекс: "2025-08-01 00:25:00"
+    static let fullDateTime: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = .current
+        return formatter
+    }()
 }
