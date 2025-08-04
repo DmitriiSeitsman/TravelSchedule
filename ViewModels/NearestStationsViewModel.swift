@@ -1,8 +1,9 @@
 import Foundation
 import CoreLocation
 
+@MainActor
 final class NearestStationsViewModel: ObservableObject {
-    @Published var stations: [Components.Schemas.Station] = []
+    @Published var state: LoadableState<[Components.Schemas.Station]> = .idle
 
     private let api: YandexScheduleAPI
     private let locationService: LocationServiceProtocol
@@ -10,14 +11,11 @@ final class NearestStationsViewModel: ObservableObject {
     init(api: YandexScheduleAPI, locationService: LocationServiceProtocol = LocationService()) {
         self.api = api
         self.locationService = locationService
-
-        Task {
-            await self.load()
-        }
     }
 
-    @MainActor
     func load() async {
+        state = .loading
+
         do {
             let location = try await locationService.requestCurrentLocation()
             print("🌍 Локация: \(location.latitude), \(location.longitude)")
@@ -28,9 +26,17 @@ final class NearestStationsViewModel: ObservableObject {
                 distance: 50
             )
 
-            print("✅ Найдено станций: \(result.stations?.count ?? 0)")
-            stations = (result.stations ?? []).compactMap { $0 }
+            let stations = (result.stations ?? []).compactMap { $0 }
+            print("✅ Найдено станций: \(stations.count)")
+            state = .loaded(stations)
+
         } catch {
+            let nsError = error as NSError
+            if nsError.code == 1 {
+                state = .noPermission
+            } else {
+                state = .error(error.localizedDescription)
+            }
             print("❌ Ошибка получения станций: \(error)")
         }
     }

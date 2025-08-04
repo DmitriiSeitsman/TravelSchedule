@@ -15,7 +15,12 @@ final class NearestCityService: NearestCityServiceProtocol {
         self.apikey = apikey
     }
 
-    func getNearestCity(lat: Double, lng: Double, distance: Int) async throws -> Components.Schemas.NearestCityResponse {
+    func getNearestCity(
+        lat: Double,
+        lng: Double,
+        distance: Int
+    ) async throws -> Components.Schemas.NearestCityResponse {
+
         let response = try await client.getNearestCity(
             .init(
                 query: .init(
@@ -31,7 +36,14 @@ final class NearestCityService: NearestCityServiceProtocol {
 
         switch response {
         case .ok(let result):
-            return try result.body.json
+            do {
+                let city = try result.body.json
+                return city
+            } catch {
+                print("‼️ Ошибка декодирования ответа NearestCity: \(error)")
+                throw URLError(.cannotDecodeContentData)
+            }
+
         case .undocumented(let status, let data):
             var buffer = Data()
             if let body = data.body {
@@ -40,7 +52,7 @@ final class NearestCityService: NearestCityServiceProtocol {
                 }
             }
             let bodyText = String(data: buffer, encoding: .utf8) ?? "unknown"
-            print("‼️ Неизвестный ответ (\(status)): \(bodyText)")
+            print("‼️ Неизвестный ответ NearestCity (\(status)): \(bodyText)")
             throw URLError(.badServerResponse)
         }
     }

@@ -2,50 +2,63 @@ import OpenAPIURLSession
 import SwiftUI
 
 struct NearestStationsView: View {
-    @StateObject private var viewModel = NearestStationsViewModel(
-        api: YandexScheduleAPI(
-            client: Client(
-                serverURL: URL(string: "https://api.rasp.yandex.net")!,
-                transport: URLSessionTransport()
-            ),
-            apikey: API.key
-        )
-    )
-    
-    
-    
+    @StateObject private var viewModel: NearestStationsViewModel
+
+    init(api: YandexScheduleAPI) {
+        _viewModel = StateObject(wrappedValue: NearestStationsViewModel(api: api))
+    }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(spacing: 16) {
             Text("Ближайшие станции")
-                .font(.largeTitle)
+                .font(.title2)
                 .bold()
-            
-            if viewModel.stations.isEmpty {
-                Spacer()
-                VStack {
-                    ProgressView()
-                    Text("Загрузка станций...")
-                        .foregroundColor(.secondary)
-                        .padding(.top, 8)
-                }
-                Spacer()
-            } else {
-                List(viewModel.stations, id: \.code) { station in
-                    VStack(alignment: .leading) {
-                        if let title = station.title {
-                            Text(title)
+
+            switch viewModel.state {
+            case .idle:
+                EmptyView()
+
+            case .loading:
+                ProgressView("Определяем местоположение...")
+
+            case .loaded(let stations):
+                if stations.isEmpty {
+                    Text("Станции не найдены")
+                } else {
+                    List(stations, id: \.self) { station in
+                        VStack(alignment: .leading) {
+                            Text(station.title ?? "Без названия")
                                 .font(.headline)
-                        }
-                        if let code = station.code {
-                            Text("Код: \(code)")
-                                .font(.subheadline)
-                                .foregroundColor(.gray)
+                            if let distance = station.distance {
+                                Text("📍 \(String(format: "%.1f", distance)) км")
+                                    .font(.subheadline)
+                            }
                         }
                     }
                 }
+
+            case .noPermission:
+                VStack(spacing: 8) {
+                    Text("Разрешите доступ к геопозиции, чтобы увидеть ближайшие станции.")
+                        .multilineTextAlignment(.center)
+                    Button("Открыть настройки") {
+                        if let url = URL(string: UIApplication.openSettingsURLString) {
+                            UIApplication.shared.open(url)
+                        }
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+
+            case .error(let message):
+                Text("Ошибка: \(message)")
+                    .foregroundColor(.red)
             }
+
+            Spacer()
         }
         .padding()
-        .navigationTitle("Станции")
+        .task {
+            await viewModel.load()
+        }
     }
 }

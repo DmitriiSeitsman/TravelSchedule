@@ -7,7 +7,8 @@ protocol LocationServiceProtocol {
 
 final class LocationService: NSObject, CLLocationManagerDelegate, LocationServiceProtocol {
     private let locationManager = CLLocationManager()
-    private var continuation: CheckedContinuation<CLLocationCoordinate2D, Error>?
+    private var locationContinuation: CheckedContinuation<CLLocationCoordinate2D, Error>?
+    private var permissionContinuation: CheckedContinuation<Bool, Never>?
 
     override init() {
         super.init()
@@ -17,29 +18,53 @@ final class LocationService: NSObject, CLLocationManagerDelegate, LocationServic
     func requestCurrentLocation() async throws -> CLLocationCoordinate2D {
         let status = locationManager.authorizationStatus
 
-        if status == .notDetermined {
+        switch status {
+        case .notDetermined:
             locationManager.requestWhenInUseAuthorization()
+            let granted = await withCheckedContinuation { continuation in
+                permissionContinuation = continuation
+            }
+            guard granted else {
+                throw NSError(domain: "LocationService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Разрешение на геолокацию не выдано"])
+            }
+        case .denied, .restricted:
+            throw NSError(domain: "LocationService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Разрешение на геолокацию не выдано"])
+        case .authorizedAlways, .authorizedWhenInUse:
+            break
+        @unknown default:
+            break
         }
 
         locationManager.requestLocation()
 
         return try await withCheckedThrowingContinuation { continuation in
-            self.continuation = continuation
+            locationContinuation = continuation
         }
     }
 
+    // MARK: - CLLocationManagerDelegate
+
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        manager.stopUpdatingLocation()
         if let coordinate = locations.first?.coordinate {
-            continuation?.resume(returning: coordinate)
+            locationContinuation?.resume(returning: coordinate)
         } else {
-            continuation?.resume(throwing: NSError(domain: "LocationService", code: 0))
+            locationContinuation?.resume(throwing: NSError(domain: "LocationService", code: 0))
         }
-        continuation = nil
+        locationContinuation = nil
     }
 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        continuation?.resume(throwing: error)
-        continuation = nil
+        locationContinuation?.resume(throwing: error)
+        locationContinuation = nil
+    }
+
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        let status = manager.authorizationStatus
+        if status == .authorizedWhenInUse || status == .authorizedAlways {
+            permissionContinuation?.resume(returning: true)
+        } else if status != .notDetermined {
+            permissionContinuation?.resume(returning: false)
+        }
+        permissionContinuation = nil
     }
 }

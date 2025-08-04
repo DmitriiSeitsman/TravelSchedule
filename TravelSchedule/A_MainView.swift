@@ -27,7 +27,7 @@ struct MainView: View {
                         NearestCityView(api: api, locationService: locationService)
                     }
                     NavigationLink("Ближайшие станции") {
-                        NearestStationsView()
+                        NearestStationsView(api: api)
                     }
                     NavigationLink("Расписание станции") {
                         StationScheduleView(api: api)
