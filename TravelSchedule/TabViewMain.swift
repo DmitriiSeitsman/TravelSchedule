@@ -1,4 +1,5 @@
 import SwiftUI
+import OpenAPIURLSession
 
 // MARK: - Root
 struct ContentView: View {
@@ -27,11 +28,41 @@ struct ContentView: View {
 
 // MARK: - Schedule
 struct ScheduleScreen: View {
-    @State private var from: String = ""
-    @State private var to: String = ""
+    @State private var from = StationSelection()
+    @State private var to   = StationSelection()
 
     @State private var showFromSearch = false
     @State private var showToSearch = false
+    @StateObject private var stationsVM: AllStationsViewModel
+    
+    private let api: YandexScheduleAPI
+    
+    private var fromText: Binding<String> {
+           Binding(
+               get: { from.displayText },
+               set: { from.displayText = $0 }
+           )
+       }
+       private var toText: Binding<String> {
+           Binding(
+               get: { to.displayText },
+               set: { to.displayText = $0 }
+           )
+       }
+    
+    init() {
+        let api = YandexScheduleAPI(
+            client: Client(
+                serverURL: URL(string: "https://api.rasp.yandex.net")!,
+                transport: URLSessionTransport()
+            ),
+            apikey: API.key
+        )
+        self.api = api
+        _stationsVM = StateObject(wrappedValue: AllStationsViewModel(api: api))
+    }
+    
+    private let locationService: LocationServiceProtocol = LocationService()
 
     private let stories: [Story] = [
         .init(image: "story1", title: "Text Text"),
@@ -43,59 +74,61 @@ struct ScheduleScreen: View {
     var canSearch: Bool { !from.isEmpty && !to.isEmpty }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-
-                // Сторис (пока без действия)
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 12) {
-                        ForEach(stories) { story in
-                            StoryCard(story: story)
+            ScrollView {
+                VStack(spacing: 24) {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 12) {
+                            ForEach(stories) { story in
+                                StoryCard(story: story)
+                            }
                         }
+                        .padding(.horizontal, 20)
                     }
-                    .padding(.horizontal, 16)
-                }
-                .padding(.top, 24)
-
-                // Панель "Откуда / Куда"
-                SearchPanel(
-                    from: $from,
-                    to: $to,
-                    onSwap: { swap(&from, &to) },
-                    onFromTap: { showFromSearch = true },
-                    onToTap:   { showToSearch = true }
-                )
-                .padding(.horizontal, 20)
-
-                // Кнопка "Найти" (когда оба поля заполнены)
-                if canSearch {
-                    NavigationLink {
-                        ResultsView(from: from, to: to)
-                    } label: {
-                        Text("Найти")
-                            .font(.headline)
-                            .frame(maxWidth: .infinity, minHeight: 52)
-                            .background(Color.blue)
-                            .foregroundColor(.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                            .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
-                    }
+                    .padding(.top, 12)
+                    SearchPanel(
+                        from: fromText,
+                        to: toText,
+                        onSwap: { swap(&from, &to) },
+                        onFromTap: { showFromSearch = true },
+                        onToTap: { showToSearch = true }
+                    )
                     .padding(.horizontal, 20)
-                    .transition(.opacity)
+                    
+                    if canSearch {
+                        NavigationLink {
+                            ResultsView(from: from.displayText, to: to.displayText)
+                        } label: {
+                            Text("Найти")
+                                .font(.headline)
+                                .frame(maxWidth: .infinity, minHeight: 52)
+                                .background(Color.blue)
+                                .foregroundColor(.white)
+                                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        }
+                        .padding(.horizontal, 20)
+                    }
                 }
             }
-        }
-        .background(Color(.systemBackground))
-        .animation(.easeInOut, value: canSearch)
-
-        .navigationDestination(isPresented: $showFromSearch) {
-            CitySearchView(title: "Откуда", selection: $from)
-        }
-        .navigationDestination(isPresented: $showToSearch) {
-            CitySearchView(title: "Куда", selection: $to)
+            .navigationDestination(isPresented: $showFromSearch) {
+                CitySearchView(
+                    title: "Откуда",
+                    selection: fromText,
+                    stationsVM: stationsVM,
+                    locationService: locationService,
+                    api: api
+                )
+            }
+            .navigationDestination(isPresented: $showToSearch) {
+                CitySearchView(
+                    title: "Куда",
+                    selection: toText,
+                    stationsVM: stationsVM,
+                    locationService: locationService,
+                    api: api
+                )
+            }
         }
     }
-}
 
 // MARK: - Story
 struct Story: Identifiable { let id = UUID(); let image: String; let title: String }

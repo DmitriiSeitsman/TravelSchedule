@@ -1,76 +1,73 @@
 import SwiftUI
 
 struct CitySearchView: View {
-
     let title: String
+    
     @Binding var selection: String
     @Environment(\.dismiss) private var dismiss
-
-    @State private var query: String = ""
-
-    // Stub-данные
-    private let allCities: [String]
-
-    init(title: String, selection: Binding<String>, allCities: [String] = [
-        "Москва", "Санкт Петербург", "Сочи", "Красноярск",
-        "Краснодар", "Казань", "Омск"
-    ]) {
+    @State private var selectedCity: City?    // для навигации
+    @StateObject private var vm: CitySearchViewModel
+    
+    init(title: String,
+         selection: Binding<String>,
+         stationsVM: AllStationsViewModel,
+         locationService: LocationServiceProtocol,
+         api: YandexScheduleAPI) {
         self.title = title
         self._selection = selection
-        self.allCities = allCities
+        _vm = StateObject(wrappedValue: CitySearchViewModel(
+            stationsVM: stationsVM,
+            locationService: locationService
+        ))
     }
-
-    private var filtered: [String] {
-        guard !query.isEmpty else { return allCities }
-        return allCities.filter { $0.localizedCaseInsensitiveContains(query) }
-    }
-
+    
     var body: some View {
-        VStack(spacing: 16) {
-
+        VStack(spacing: 12) {
+            // Поисковая строка
             HStack(spacing: 8) {
                 Image(systemName: "magnifyingglass")
                     .foregroundStyle(.secondary)
-
-                TextField("Введите запрос", text: $query)
+                TextField("Введите запрос", text: $vm.query)
                     .font(.system(size: 17, weight: .regular))
                     .textInputAutocapitalization(.words)
                     .autocorrectionDisabled(true)
             }
-            .padding(.vertical, 7)
-            .padding(.horizontal, 8)
+            .padding(.vertical, 10)
+            .padding(.horizontal, 12)
             .background(Color(.systemGray5))
-            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             .padding(.horizontal, 16)
-
-            List {
-                ForEach(filtered, id: \.self) { city in
+            
+            if vm.isLoading {
+                ProgressView("Загрузка городов…")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                List(vm.filtered) { city in
                     Button {
-                        selection = city
-                        dismiss()
+                        selection = city.title
+                        selectedCity = city
                     } label: {
                         HStack {
-                            Text(city)
+                            Text(city.title)
                                 .foregroundStyle(.primary)
                             Spacer()
                             Image(systemName: "chevron.right")
-                                .font(.system(size: 17, weight: .regular))
+                                .font(.system(size: 17))
                                 .foregroundStyle(.primary)
-                                .foregroundColor(.primary)
                         }
-                        .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
+                    .listRowSeparator(.hidden)
                 }
-            }
-            .listStyle(.plain)
-            .overlay {
-                if filtered.isEmpty {
-                    ContentUnavailableView(
-                        "Город не найден",
-                        systemImage: ""
-                    )
-                    .font(.system(size: 24, weight: .bold))
+                .listStyle(.plain)
+                .overlay {
+                    if vm.filtered.isEmpty {
+                        ContentUnavailableView(
+                            "Город не найден",
+                            systemImage: ""
+                        )
+                        .font(.system(size: 24, weight: .bold))
+                    }
                 }
             }
         }
@@ -82,27 +79,26 @@ struct CitySearchView: View {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 17, weight: .semibold))
                         .foregroundStyle(.primary)
-                        .foregroundColor(.primary)
-                        .frame(width: 44, height: 44, alignment: .leading)
-                        .contentShape(Rectangle())
+                        .frame(width: 44, height: 44)
                 }
             }
             ToolbarItem(placement: .principal) {
                 Text("Выбор города")
                     .font(.system(size: 17, weight: .bold))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.9)
             }
         }
-        .navigationTitle("Выбор города")
-        .font(.system(size: 17, weight: .regular))
-        .scrollDismissesKeyboard(.immediately)
-        .background(Color(.systemBackground))
-    }
-}
-
-#Preview {
-    NavigationStack {
-        CitySearchView(title: "Откуда", selection: .constant(""))
+        .onAppear { vm.loadCities() }
+        .navigationDestination(item: $selectedCity) { city in
+            StationListView(
+                city: city,
+                cityTitle: city.title,
+                cityCode: city.id,
+                stationsVM: vm.stationsVM,
+                selection: $selection
+            )
+        }
+        .onChange(of: selection) { _, newValue in
+                   if !newValue.isEmpty { dismiss() }
+               }
     }
 }
