@@ -7,17 +7,17 @@ final class CitySearchViewModel: ObservableObject {
     @Published private(set) var cities: [City] = []
     @Published private(set) var filtered: [City] = []
     @Published var isLoading: Bool = false
-    
+
     private var cancellables = Set<AnyCancellable>()
     private let locationService: LocationServiceProtocol
-
     let stationsVM: AllStationsViewModel
-    
+
+    private var didBuild = false
+
     init(stationsVM: AllStationsViewModel, locationService: LocationServiceProtocol) {
         self.stationsVM = stationsVM
         self.locationService = locationService
 
-        // подписка на поиск
         $query
             .debounce(for: .milliseconds(200), scheduler: RunLoop.main)
             .sink { [weak self] text in
@@ -27,52 +27,62 @@ final class CitySearchViewModel: ObservableObject {
     }
 
     func loadCities() {
-        guard cities.isEmpty else { return }
+        guard !didBuild else { return }
+        didBuild = true
         isLoading = true
 
-        Task {
+        Task { @MainActor in
+            defer { isLoading = false }
+
             if !stationsVM.didLoad {
                 await stationsVM.loadStations()
             }
 
-            let currentCountry = (try? await locationService.currentCountryCode()) ?? "RU"
+            let regionCode = (try? await locationService.currentCountryCode()) ?? "RU"
+            let currentCountryName = Locale.current.localizedString(forRegionCode: regionCode) ?? regionCode
 
+            var byId = [String: City]()
 
-            var all: [City] = []
             for country in stationsVM.countries {
                 let countryName = country.title ?? ""
                 for region in country.regions ?? [] {
                     for settlement in region.settlements ?? [] {
-                        if let code = settlement.yandexID,
-                           let title = settlement.title {
-                            all.append(City(id: code, title: title, country: countryName))
+                        guard
+                            let id = settlement.codes?.yandex_code, !id.isEmpty,
+                            let title = settlement.title, !title.isEmpty
+                        else { continue }
+
+                        if byId[id] == nil {
+                            byId[id] = City(id: id, title: title, country: countryName)
                         }
                     }
                 }
             }
 
-            // сортировка: сначала города текущей страны
-            let sorted = all.sorted { lhs, rhs in
-                if lhs.country == currentCountry && rhs.country != currentCountry {
-                    return true
-                }
-                if lhs.country != currentCountry && rhs.country == currentCountry {
-                    return false
-                }
-                return lhs.title.localizedCaseInsensitiveCompare(rhs.title) == .orderedAscending
+            var list = Array(byId.values)
+            list.sort {
+                let lTop = $0.country == currentCountryName
+                let rTop = $1.country == currentCountryName
+                if lTop != rTop { return lTop }
+                return $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending
             }
 
-            self.cities = sorted
-            self.filtered = sorted
-            self.isLoading = false
+            self.cities = list
+            self.filtered = list
         }
     }
 
     private func applyFilter(query: String) {
-        guard !query.isEmpty else {
-            filtered = cities
-            return
+        let q = query
+            .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !q.isEmpty else { filtered = cities; return }
+
+        filtered = cities.filter {
+            $0.title
+                .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
+                .contains(q)
         }
-        filtered = cities.filter { $0.title.localizedCaseInsensitiveContains(query) }
     }
 }

@@ -4,15 +4,17 @@ import SwiftUI
 struct FiltersView: View {
     let onBack: () -> Void
     
-    // Время отправления
     @State private var morning = false   // Утро 06:00–12:00
     @State private var dayTime = false   // День 12:00–18:00
     @State private var evening = false   // Вечер 18:00–00:00
     @State private var night = false     // Ночь 00:00–06:00
     
-    // Пересадки
     enum TransfersChoice { case yes, no }
     @State private var transfers: TransfersChoice? = nil
+
+    private var canApply: Bool {
+        (morning || dayTime || evening || night) && transfers != nil
+    }
     
     var body: some View {
         ScrollView {
@@ -35,7 +37,6 @@ struct FiltersView: View {
                 }
             }
             .padding(.horizontal, 16)
-            //.background(Color.yellow.opacity(0.08))
         }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
@@ -50,8 +51,27 @@ struct FiltersView: View {
                 }
             }
         }
+        .safeAreaInset(edge: .bottom) {
+            if canApply {
+                Button(action: onBack) {
+                    Text("Применить")
+                        .font(.system(size: 17, weight: .bold))
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity, minHeight: 60, maxHeight: 60)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .background(Color.blueUniversal)
+                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .padding(.horizontal, 16)
+                .padding(.bottom, 24)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+                .animation(.easeInOut(duration: 0.2), value: canApply)
+            }
+        }
     }
 }
+
 
 // MARK: - Typography (централизация шрифтов)
 private enum TSFont {

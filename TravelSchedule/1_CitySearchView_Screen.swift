@@ -61,11 +61,18 @@ struct CitySearchView: View {
                 .listStyle(.plain)
                 .overlay {
                     if vm.filtered.isEmpty {
-                        ContentUnavailableView(
-                            "Город не найден",
-                            systemImage: ""
-                        )
-                        .font(.system(size: 24, weight: .bold))
+                        if #available(iOS 17, *) {
+                            ContentUnavailableView {
+                                Text("Город не найден")
+                                    .font(.system(size: 24, weight: .bold))
+                            }
+                        } else {
+                            VStack {
+                                Text("Город не найден")
+                                    .font(.system(size: 24, weight: .bold))
+                            }
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        }
                     }
                 }
             }
@@ -101,3 +108,4 @@ struct CitySearchView: View {
         }
     }
 }
+
