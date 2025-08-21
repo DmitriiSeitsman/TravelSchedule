@@ -90,12 +90,6 @@ struct StationListView: View {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(st.title)
                                     .foregroundStyle(.primary)
-                                
-//                                if let tt = st.transportType, !tt.isEmpty {
-//                                    Text(tt.capitalized)
-//                                        .font(.footnote)
-//                                        .foregroundStyle(.secondary)
-//                                }
                             }
                             Spacer()
                             Image(systemName: "chevron.right")

@@ -23,7 +23,6 @@ struct CitySearchView: View {
     
     var body: some View {
         VStack(spacing: 12) {
-            // Поисковая строка
             HStack(spacing: 8) {
                 Image(systemName: "magnifyingglass")
                     .foregroundStyle(.secondary)
@@ -98,7 +97,7 @@ struct CitySearchView: View {
             )
         }
         .onChange(of: selection) { _, newValue in
-                   if !newValue.isEmpty { dismiss() }
-               }
+            if !newValue.isEmpty { dismiss() }
+        }
     }
 }

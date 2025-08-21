@@ -75,16 +75,19 @@ struct ScheduleScreen: View {
 
     var body: some View {
             ScrollView {
-                VStack(spacing: 24) {
+                VStack(spacing: 0) {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 12) {
                             ForEach(stories) { story in
                                 StoryCard(story: story)
                             }
                         }
-                        .padding(.horizontal, 20)
+                       // .background(Color.red.opacity(0.5))
+                        .padding(.horizontal, 16)
                     }
-                    .padding(.top, 12)
+                    .padding(.top, 24)
+                    .padding(.bottom, 24)
+                    //.background(Color.green.opacity(0.5))
                     SearchPanel(
                         from: fromText,
                         to: toText,
@@ -92,20 +95,22 @@ struct ScheduleScreen: View {
                         onFromTap: { showFromSearch = true },
                         onToTap: { showToSearch = true }
                     )
-                    .padding(.horizontal, 20)
+                    .padding(.top, 20)
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 16)
+                   // .background(Color.yellow.opacity(0.5))
                     
-                    if canSearch {
+                     if canSearch {
                         NavigationLink {
                             ResultsView(from: from.displayText, to: to.displayText)
                         } label: {
                             Text("Найти")
-                                .font(.headline)
-                                .frame(maxWidth: .infinity, minHeight: 52)
-                                .background(Color.blue)
+                                .font(.system(size: 17, weight: .bold))
+                                .frame(width: 150, height: 60)
+                                .background(.blueUniversal)
                                 .foregroundColor(.white)
                                 .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                         }
-                        .padding(.horizontal, 20)
                     }
                 }
             }
@@ -117,7 +122,9 @@ struct ScheduleScreen: View {
                     locationService: locationService,
                     api: api
                 )
+                .toolbar(.hidden, for: .tabBar)
             }
+
             .navigationDestination(isPresented: $showToSearch) {
                 CitySearchView(
                     title: "Куда",
@@ -126,6 +133,7 @@ struct ScheduleScreen: View {
                     locationService: locationService,
                     api: api
                 )
+                .toolbar(.hidden, for: .tabBar)
             }
         }
     }
@@ -218,26 +226,9 @@ struct SearchPanel: View {
             }
             .padding(.trailing, 16)
         }
-        .padding(.top, 20)
     }
 }
 
-// MARK: - Результаты (заглушка)
-struct ResultsView: View {
-    let from: String
-    let to: String
-
-    var body: some View {
-        VStack(spacing: 12) {
-            Text("Результаты")
-                .font(.title2.weight(.semibold))
-            Text("\(from) → \(to)")
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(.systemBackground))
-    }
-}
 
 // MARK: - Preview
 #Preview { ContentView() }

@@ -63,6 +63,11 @@
 			path = TravelScheduleUITests;
 			sourceTree = "<group>";
 		};
+		7B0CC8302E56F6F1009C108A /* NetworkErrors */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = NetworkErrors;
+			sourceTree = "<group>";
+		};
 		7B4094262E3905870036FB99 /* ViewModels */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = ViewModels;
@@ -125,6 +130,7 @@
 		7B0903B52E321EFE00618EA0 = {
 			isa = PBXGroup;
 			children = (
+				7B0CC8302E56F6F1009C108A /* NetworkErrors */,
 				7BBA63D02E3B585000B1BAE3 /* Helpers */,
 				7BBA63C82E3A587F00B1BAE3 /* Models */,
 				7B4094262E3905870036FB99 /* ViewModels */,
@@ -166,6 +172,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				7B0903C02E321EFE00618EA0 /* TravelSchedule */,
+				7B0CC8302E56F6F1009C108A /* NetworkErrors */,
 				7B4094262E3905870036FB99 /* ViewModels */,
 				7B810E002E38E694002505A7 /* YAML */,
 				7BBA63C82E3A587F00B1BAE3 /* Models */,
