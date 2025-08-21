@@ -3,6 +3,7 @@ import SwiftUI
 // MARK: - FiltersView
 struct FiltersView: View {
     let onBack: () -> Void
+    let onApply: () -> Void
     
     @State private var morning = false   // Утро 06:00–12:00
     @State private var dayTime = false   // День 12:00–18:00
@@ -38,39 +39,42 @@ struct FiltersView: View {
             }
             .padding(.horizontal, 16)
         }
-        .navigationTitle("")
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(true)
-        .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button(action: onBack) {
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 17, weight: .semibold))
-                        .frame(width: 44, height: 44)
-                        .foregroundColor(.primary)
+                .navigationTitle("")
+                .navigationBarTitleDisplayMode(.inline)
+                .navigationBarBackButtonHidden(true)
+                .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button(action: onBack) {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 17, weight: .semibold))
+                                .frame(width: 44, height: 44)
+                                .foregroundColor(.primary)
+                        }
+                    }
+                }
+                .safeAreaInset(edge: .bottom) {
+                    if canApply {
+                        Button {
+                            onApply()         // <-- сначала помечаем «фильтры применены»
+                            onBack()          // <-- затем уходим назад
+                        } label: {
+                            Text("Применить")
+                                .font(.system(size: 17, weight: .bold))
+                                .foregroundStyle(.white)
+                                .frame(maxWidth: .infinity, minHeight: 60, maxHeight: 60)
+                                .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        .background(Color.blueUniversal)
+                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 24)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                        .animation(.easeInOut(duration: 0.2), value: canApply)
+                    }
                 }
             }
         }
-        .safeAreaInset(edge: .bottom) {
-            if canApply {
-                Button(action: onBack) {
-                    Text("Применить")
-                        .font(.system(size: 17, weight: .bold))
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity, minHeight: 60, maxHeight: 60)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .background(Color.blueUniversal)
-                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                .padding(.horizontal, 16)
-                .padding(.bottom, 24)
-                .transition(.move(edge: .bottom).combined(with: .opacity))
-                .animation(.easeInOut(duration: 0.2), value: canApply)
-            }
-        }
-    }
-}
 
 
 // MARK: - Typography (централизация шрифтов)
@@ -176,6 +180,6 @@ private struct Radio: View {
 // MARK: - Preview
 #Preview {
     NavigationStack {
-        FiltersView(onBack: { })
+        FiltersView(onBack: { }, onApply: {})
     }
 }

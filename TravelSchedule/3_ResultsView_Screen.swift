@@ -9,7 +9,8 @@ struct ResultsView: View {
     @State private var items: [SegmentItem] = SegmentItem.mock
     @State private var isLoading = false
     @State private var error: String?
-
+    @State private var filtersApplied = false
+    
     var body: some View {
         ZStack {
             if isLoading {
@@ -56,24 +57,22 @@ struct ResultsView: View {
                 }
             }
         }
-        .safeAreaInset(edge: .top, alignment: .leading) {
-            VStack(alignment: .leading) {
-                Text("\(from) → \(to)")
-                    .font(.system(size: 24, weight: .bold))
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.horizontal, 16)
-            }
-            .padding(.top, 16)
-        }
         .safeAreaInset(edge: .bottom) {
             if !items.isEmpty {
                 VStack(spacing: 0) {
                     Button {
                         showFilters = true
                     } label: {
-                        Text("Уточнить время")
-                            .font(.system(size: 17, weight: .bold))
-                            .frame(maxWidth: .infinity, minHeight: 60)
+                        HStack(spacing: 4) {
+                            Text("Уточнить время")
+                                .font(.system(size: 17, weight: .bold))
+                            if filtersApplied {
+                                Circle()
+                                    .fill(Color.redUniversal)
+                                    .frame(width: 8, height: 8)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, minHeight: 60)
                     }
                     .buttonStyle(.plain)
                     .foregroundColor(.white)
@@ -85,7 +84,10 @@ struct ResultsView: View {
             }
         }
         .navigationDestination(isPresented: $showFilters) {
-            FiltersView(onBack: { showFilters = false })
+            FiltersView(
+                onBack: { showFilters = false },
+                onApply: { filtersApplied = true; showFilters = false } // <-- NEW
+            )
         }
         .onAppear { load() }
     }
@@ -93,7 +95,6 @@ struct ResultsView: View {
     private func load() {
         isLoading = false
         error = nil
-        // позже воткнём сеть
     }
 }
 // MARK: - Card
