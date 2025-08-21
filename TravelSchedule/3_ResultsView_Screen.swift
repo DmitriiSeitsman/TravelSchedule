@@ -57,6 +57,16 @@ struct ResultsView: View {
                 }
             }
         }
+        .safeAreaInset(edge: .top, alignment: .leading) {
+            VStack(alignment: .leading, spacing: 0) {
+                Text("\(from) → \(to)")
+                    .font(.system(size: 24, weight: .bold))
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal, 16)
+            }
+            .padding(.top, 16)
+            .padding(.bottom, 0)
+        }
         .safeAreaInset(edge: .bottom) {
             if !items.isEmpty {
                 VStack(spacing: 0) {
