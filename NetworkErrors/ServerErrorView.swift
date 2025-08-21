@@ -3,7 +3,7 @@ import SwiftUI
 struct ServerErrorView: View {
     var body: some View {
         VStack(spacing: 16) {
-            Image("ServerError")
+            Image(.serverError)
                 .resizable()
                 .scaledToFit()
                 .frame(width: 223, height: 223)
@@ -11,6 +11,7 @@ struct ServerErrorView: View {
 
             Text("ошибка сервера")
                 .font(.system(size: 24, weight: .bold))
+                .foregroundColor(.ypBlack)
                 .multilineTextAlignment(.center)
         }
         .padding(24)

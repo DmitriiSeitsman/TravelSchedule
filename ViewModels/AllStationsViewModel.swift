@@ -56,28 +56,28 @@ final class AllStationsViewModel: ObservableObject {
         }
     }
 }
+
 extension AllStationsViewModel {
     func stations(forCityCode cityCode: String) -> [StationItem] {
-        for country in countries {
-            for region in country.regions ?? [] {
-                for settlement in region.settlements ?? [] {
-                    if settlement.codes?.yandex_code == cityCode {
-                        let items: [StationItem] = (settlement.stations ?? []).compactMap { st in
-                            guard let code = st.codes?.yandex_code,
-                                  let title = st.title else { return nil }
-                            return StationItem(
-                                id: code,
-                                title: title,
-                                transportType: st.transport_type,
-                                stationType: st.station_type
-                            )
-                        }
-                        // алфавит по названию
-                        return items.sorted { $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending }
-                    }
-                }
+        let settlements = countries
+            .flatMap { $0.regions ?? [] }
+            .flatMap { $0.settlements ?? [] }
+            .filter { $0.codes?.yandex_code == cityCode }
+
+        let items = settlements
+            .flatMap { $0.stations ?? [] }
+            .compactMap { st -> StationItem? in
+                guard let code = st.codes?.yandex_code, let title = st.title else { return nil }
+                return StationItem(
+                    id: code,
+                    title: title,
+                    transportType: st.transport_type,
+                    stationType: st.station_type
+                )
             }
+
+        return items.sorted {
+            $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending
         }
-        return []
     }
 }

@@ -35,8 +35,7 @@ struct AllStationsView: View {
                 }
             }
             .navigationTitle("Все станции")
-
-            .onAppear {
+            .task {
                 guard !viewModel.didLoad else { return }
                 Task {
                     try? await Task.sleep(nanoseconds: 150_000_000)

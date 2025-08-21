@@ -9,17 +9,18 @@ struct SettingsScreen: View {
             VStack(spacing: 12) {
                 Image("Settings").renderingMode(.template)
                     .font(.system(size: 36))
+                    .foregroundColor(.ypBlack)
                 Text("Настройки")
                     .font(.title3.weight(.semibold))
+                    .foregroundColor(.ypBlack)
             }
             .foregroundStyle(.secondary)
 
-            // Кнопки вызова заглушек
             VStack(spacing: 12) {
                 Button("Показать «нет интернета»") {
                     showConnectionError = true
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.bordered)
 
                 Button("Показать «ошибка сервера»") {
                     showServerError = true
@@ -30,7 +31,6 @@ struct SettingsScreen: View {
             Spacer()
         }
         .padding()
-        // Открываем как sheet — можно смахнуть вниз
         .sheet(isPresented: $showConnectionError) {
             ConnectionErrorView()
                 .presentationDragIndicator(.visible)

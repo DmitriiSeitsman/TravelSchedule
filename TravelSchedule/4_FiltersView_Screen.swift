@@ -11,8 +11,8 @@ struct FiltersView: View {
     @State private var night = false     // Ночь 00:00–06:00
     
     enum TransfersChoice { case yes, no }
-    @State private var transfers: TransfersChoice? = nil
-
+    @State private var transfers: TransfersChoice?
+    
     private var canApply: Bool {
         (morning || dayTime || evening || night) && transfers != nil
     }
@@ -39,42 +39,42 @@ struct FiltersView: View {
             }
             .padding(.horizontal, 16)
         }
-                .navigationTitle("")
-                .navigationBarTitleDisplayMode(.inline)
-                .navigationBarBackButtonHidden(true)
-                .toolbar {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Button(action: onBack) {
-                            Image(systemName: "chevron.left")
-                                .font(.system(size: 17, weight: .semibold))
-                                .frame(width: 44, height: 44)
-                                .foregroundColor(.primary)
-                        }
-                    }
-                }
-                .safeAreaInset(edge: .bottom) {
-                    if canApply {
-                        Button {
-                            onApply()         // <-- сначала помечаем «фильтры применены»
-                            onBack()          // <-- затем уходим назад
-                        } label: {
-                            Text("Применить")
-                                .font(.system(size: 17, weight: .bold))
-                                .foregroundStyle(.white)
-                                .frame(maxWidth: .infinity, minHeight: 60, maxHeight: 60)
-                                .contentShape(Rectangle())
-                        }
-                        .buttonStyle(.plain)
-                        .background(Color.blueUniversal)
-                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                        .padding(.horizontal, 16)
-                        .padding(.bottom, 24)
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
-                        .animation(.easeInOut(duration: 0.2), value: canApply)
-                    }
+        .navigationTitle("")
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button(action: onBack) {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 17, weight: .semibold))
+                        .frame(width: 44, height: 44)
+                        .foregroundColor(.ypBlack)
                 }
             }
         }
+        .safeAreaInset(edge: .bottom) {
+            if canApply {
+                Button {
+                    onApply()
+                    onBack()
+                } label: {
+                    Text("Применить")
+                        .font(.system(size: 17, weight: .bold))
+                        .foregroundColor(.whiteUniversal)
+                        .frame(maxWidth: .infinity, minHeight: 60, maxHeight: 60)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .background(Color.blueUniversal)
+                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .padding(.horizontal, 16)
+                .padding(.bottom, 24)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+                .animation(.easeInOut(duration: 0.2), value: canApply)
+            }
+        }
+    }
+}
 
 
 // MARK: - Typography (централизация шрифтов)
@@ -92,6 +92,7 @@ private struct SectionHeader: View {
     var body: some View {
         Text(text)
             .font(TSFont.section)
+            .foregroundColor(.ypBlack)
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.top, 16)
             .padding(.bottom, 16)
@@ -107,6 +108,7 @@ private struct CheckboxRow: View {
         HStack(spacing: 0) {
             Text(title)
                 .font(TSFont.row)
+                .foregroundColor(.ypBlack)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             Checkbox(isOn: isOn)
@@ -131,6 +133,7 @@ private struct Checkbox: View {
             if isOn {
                 Image(systemName: "checkmark")
                     .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(.ypBlack)
             }
         }
         .accessibilityLabel(isOn ? "Выбрано" : "Не выбрано")
@@ -146,6 +149,7 @@ private struct RadioRow: View {
         HStack(spacing: 12) {
             Text(title)
                 .font(TSFont.row)
+                .foregroundColor(.ypBlack)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             Radio(isSelected: isSelected)
@@ -165,11 +169,12 @@ private struct Radio: View {
         ZStack {
             Circle()
                 .strokeBorder(.primary, lineWidth: 2)
+                .foregroundColor(.ypBlack)
                 .frame(width: 24, height: 24)
             
             if isSelected {
                 Circle()
-                    .fill(.primary)
+                    .fill(.ypBlack)
                     .frame(width: 12, height: 12)
             }
         }

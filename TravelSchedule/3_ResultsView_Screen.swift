@@ -39,8 +39,7 @@ struct ResultsView: View {
                                 }
                         }
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 16)
+                    .padding([.horizontal, .vertical], 16)
                 }
             }
         }
@@ -53,7 +52,7 @@ struct ResultsView: View {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 17, weight: .semibold))
                         .frame(width: 44, height: 44)
-                        .foregroundColor(.primary)
+                        .foregroundColor(.ypBlack)
                 }
             }
         }
@@ -61,6 +60,7 @@ struct ResultsView: View {
             VStack(alignment: .leading, spacing: 0) {
                 Text("\(from) → \(to)")
                     .font(.system(size: 24, weight: .bold))
+                    .foregroundColor(.ypBlack)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.horizontal, 16)
             }
@@ -130,6 +130,7 @@ private struct SegmentCard: View {
                 VStack(alignment: .leading, spacing: 0) {
                     Text(item.carrierName)
                         .font(.system(size: 17, weight: .regular))
+                        .foregroundColor(.blackUniversal)
                     if let transfer = item.transferText {
                         Text(transfer)
                             .font(.system(size: 12, weight: .regular))
@@ -142,6 +143,7 @@ private struct SegmentCard: View {
                 Spacer()
                 Text(item.departureDateShort)
                     .font(.system(size: 12, weight: .regular))
+                    .foregroundColor(.blackUniversal)
 
             }
             //.background(Color.blue)
@@ -149,6 +151,7 @@ private struct SegmentCard: View {
             HStack {
                 Text(item.departureTime)
                     .font(.system(size: 17, weight: .regular))
+                    .foregroundColor(.blackUniversal)
 
                 ZStack {
                     Capsule()
@@ -157,6 +160,7 @@ private struct SegmentCard: View {
 
                     Text(item.durationText)
                         .font(.system(size: 12, weight: .regular))
+                        .foregroundColor(.blackUniversal)
                         .padding(.horizontal, 5)
                         .padding(.vertical, 3)
                         .background(.simpleGray)
@@ -166,6 +170,7 @@ private struct SegmentCard: View {
 
                 Text(item.arrivalTime)
                     .font(.system(size: 17, weight: .regular))
+                    .foregroundColor(.blackUniversal)
             }
             //.background(Color.green)
             .frame(height: 40)

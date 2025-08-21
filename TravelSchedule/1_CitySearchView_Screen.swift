@@ -48,11 +48,11 @@ struct CitySearchView: View {
                     } label: {
                         HStack {
                             Text(city.title)
-                                .foregroundStyle(.primary)
+                                .foregroundColor(.ypBlack)
                             Spacer()
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 17))
-                                .foregroundStyle(.primary)
+                                .foregroundColor(.ypBlack)
                         }
                     }
                     .buttonStyle(.plain)
@@ -65,11 +65,13 @@ struct CitySearchView: View {
                             ContentUnavailableView {
                                 Text("Город не найден")
                                     .font(.system(size: 24, weight: .bold))
+                                    .foregroundColor(.ypBlack)
                             }
                         } else {
                             VStack {
                                 Text("Город не найден")
                                     .font(.system(size: 24, weight: .bold))
+                                    .foregroundColor(.ypBlack)
                             }
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                         }
@@ -84,13 +86,14 @@ struct CitySearchView: View {
                 Button(action: { dismiss() }) {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 17, weight: .semibold))
-                        .foregroundStyle(.primary)
+                        .foregroundColor(.ypBlack)
                         .frame(width: 44, height: 44)
                 }
             }
             ToolbarItem(placement: .principal) {
                 Text("Выбор города")
                     .font(.system(size: 17, weight: .bold))
+                    .foregroundColor(.ypBlack)
             }
         }
         .onAppear { vm.loadCities() }

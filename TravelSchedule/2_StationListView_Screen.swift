@@ -11,35 +11,24 @@ struct StationListView: View {
     @State private var query: String = ""
 
     private var allStations: [StationItem] {
-        var settlements: [Components.Schemas.Settlement] = []
-        for country in stationsVM.countries {
-            for region in country.regions ?? [] {
-                for settlement in region.settlements ?? [] {
-                    if settlement.codes?.yandex_code == city.id {
-                        settlements.append(settlement)
-                    }
-                }
-            }
-        }
+        let settlements = stationsVM.countries
+            .flatMap { $0.regions ?? [] }
+            .flatMap { $0.settlements ?? [] }
+            .filter { $0.codes?.yandex_code == city.id }
 
-        var result: [StationItem] = []
-        for settlement in settlements {
-            for st in settlement.stations ?? [] {
-                if let code = st.codes?.yandex_code,
-                   let title = st.title {
-                    result.append(
-                        StationItem(
-                            id: code,
-                            title: title,
-                            transportType: st.transport_type,
-                            stationType: st.station_type
-                        )
-                    )
-                }
+        let stations = settlements
+            .flatMap { $0.stations ?? [] }
+            .compactMap { st -> StationItem? in
+                guard let code = st.codes?.yandex_code, let title = st.title else { return nil }
+                return StationItem(
+                    id: code,
+                    title: title,
+                    transportType: st.transport_type,
+                    stationType: st.station_type
+                )
             }
-        }
 
-        return result.sorted {
+        return stations.sorted {
             $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending
         }
     }
@@ -85,12 +74,12 @@ struct StationListView: View {
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(st.title)
-                                    .foregroundStyle(.primary)
+                                    .foregroundColor(.ypBlack)
                             }
                             Spacer()
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 17))
-                                .foregroundStyle(.secondary)
+                                .foregroundColor(.ypBlack)
                         }
                         .contentShape(Rectangle())
                     }
@@ -105,11 +94,13 @@ struct StationListView: View {
                         ContentUnavailableView {
                             Text("Станции не найдены")
                                 .font(.system(size: 24, weight: .bold))
+                                .foregroundColor(.ypBlack)
                         }
                     } else {
                         VStack {
                             Text("Станции не найдены")
                                 .font(.system(size: 24, weight: .bold))
+                                .foregroundColor(.ypBlack)
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
@@ -118,11 +109,13 @@ struct StationListView: View {
                         ContentUnavailableView {
                             Text("Не найдено")
                                 .font(.system(size: 24, weight: .bold))
+                                .foregroundColor(.ypBlack)
                         }
                     } else {
                         VStack {
                             Text("Не найдено")
                                 .font(.system(size: 24, weight: .bold))
+                                .foregroundColor(.ypBlack)
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
@@ -136,12 +129,14 @@ struct StationListView: View {
                 Button(action: { dismiss() }) {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 17, weight: .semibold))
+                        .foregroundColor(.ypBlack)
                         .frame(width: 44, height: 44)
                 }
             }
             ToolbarItem(placement: .principal) {
                 Text("Выбор станции")
                     .font(.system(size: 17, weight: .bold))
+                    .foregroundColor(.ypBlack)
             }
         }
         .scrollDismissesKeyboard(.immediately)
