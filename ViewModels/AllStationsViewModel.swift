@@ -20,14 +20,16 @@ final class AllStationsViewModel: ObservableObject {
     }
 
     func loadStations() async {
-        guard !didLoad else { return } // защита от повторной загрузки
+        guard !didLoad else { return }
+        didLoad = true
+
         isLoading = true
         errorMessage = nil
+        defer { isLoading = false }
 
         do {
             let response = try await api.allStations.getAllStations()
-
-            // Автоматическая сортировка стран и их вложенных данных
+            
             countries = (response.countries ?? [])
                 .sorted { ($0.title ?? "") < ($1.title ?? "") }
                 .map { country in
@@ -48,13 +50,34 @@ final class AllStationsViewModel: ObservableObject {
                         }
                     return sortedCountry
                 }
-
-            didLoad = true
         } catch {
             print("❌ Ошибка загрузки станций: \(error)")
             errorMessage = "Не удалось загрузить станции"
         }
+    }
+}
 
-        isLoading = false
+extension AllStationsViewModel {
+    func stations(forCityCode cityCode: String) -> [StationItem] {
+        let settlements = countries
+            .flatMap { $0.regions ?? [] }
+            .flatMap { $0.settlements ?? [] }
+            .filter { $0.codes?.yandex_code == cityCode }
+
+        let items = settlements
+            .flatMap { $0.stations ?? [] }
+            .compactMap { st -> StationItem? in
+                guard let code = st.codes?.yandex_code, let title = st.title else { return nil }
+                return StationItem(
+                    id: code,
+                    title: title,
+                    transportType: st.transport_type,
+                    stationType: st.station_type
+                )
+            }
+
+        return items.sorted {
+            $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending
+        }
     }
 }

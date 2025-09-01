@@ -3,7 +3,9 @@ import Foundation
 
 protocol LocationServiceProtocol {
     func requestCurrentLocation() async throws -> CLLocationCoordinate2D
+    func currentCountryCode() async throws -> String?
 }
+
 
 final class LocationService: NSObject, CLLocationManagerDelegate, LocationServiceProtocol {
     private let locationManager = CLLocationManager()
@@ -66,5 +68,24 @@ final class LocationService: NSObject, CLLocationManagerDelegate, LocationServic
             permissionContinuation?.resume(returning: false)
         }
         permissionContinuation = nil
+    }
+}
+
+extension LocationService {
+    func currentCountryCode() async throws -> String? {
+        let coordinate = try await requestCurrentLocation()
+        let location = CLLocation(latitude: coordinate.latitude,
+                                  longitude: coordinate.longitude)
+
+        return try await withCheckedThrowingContinuation { continuation in
+            CLGeocoder().reverseGeocodeLocation(location) { placemarks, error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+                let countryCode = placemarks?.first?.isoCountryCode
+                continuation.resume(returning: countryCode)
+            }
+        }
     }
 }

@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7B4E6ED22E5351B900CE9144 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7B4E6ED12E5351B900CE9144 /* Assets.xcassets */; };
-		7B4E6ED52E53523200CE9144 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B4E6ED42E53523200CE9144 /* LaunchScreen.storyboard */; };
 		7B810DF82E38E3E0002505A7 /* OpenAPIRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = 7B810DF72E38E3E0002505A7 /* OpenAPIRuntime */; };
 		7B810DFB2E38E3FC002505A7 /* OpenAPIURLSession in Frameworks */ = {isa = PBXBuildFile; productRef = 7B810DFA2E38E3FC002505A7 /* OpenAPIURLSession */; };
 /* End PBXBuildFile section */
@@ -34,8 +32,6 @@
 		7B0903BE2E321EFE00618EA0 /* TravelSchedule.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TravelSchedule.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B0903CB2E321F0000618EA0 /* TravelScheduleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TravelScheduleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B0903D52E321F0000618EA0 /* TravelScheduleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TravelScheduleUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		7B4E6ED12E5351B900CE9144 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		7B4E6ED42E53523200CE9144 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -65,6 +61,11 @@
 		7B0903D82E321F0000618EA0 /* TravelScheduleUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = TravelScheduleUITests;
+			sourceTree = "<group>";
+		};
+		7B0CC8302E56F6F1009C108A /* NetworkErrors */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = NetworkErrors;
 			sourceTree = "<group>";
 		};
 		7B4094262E3905870036FB99 /* ViewModels */ = {
@@ -129,8 +130,7 @@
 		7B0903B52E321EFE00618EA0 = {
 			isa = PBXGroup;
 			children = (
-				7B4E6ED12E5351B900CE9144 /* Assets.xcassets */,
-				7B4E6ED42E53523200CE9144 /* LaunchScreen.storyboard */,
+				7B0CC8302E56F6F1009C108A /* NetworkErrors */,
 				7BBA63D02E3B585000B1BAE3 /* Helpers */,
 				7BBA63C82E3A587F00B1BAE3 /* Models */,
 				7B4094262E3905870036FB99 /* ViewModels */,
@@ -172,6 +172,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				7B0903C02E321EFE00618EA0 /* TravelSchedule */,
+				7B0CC8302E56F6F1009C108A /* NetworkErrors */,
 				7B4094262E3905870036FB99 /* ViewModels */,
 				7B810E002E38E694002505A7 /* YAML */,
 				7BBA63C82E3A587F00B1BAE3 /* Models */,
@@ -288,8 +289,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7B4E6ED22E5351B900CE9144 /* Assets.xcassets in Resources */,
-				7B4E6ED52E53523200CE9144 /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
