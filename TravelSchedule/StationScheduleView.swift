@@ -2,11 +2,11 @@ import SwiftUI
 
 struct StationScheduleView: View {
     @StateObject private var viewModel: StationScheduleViewModel
-
+    
     init(api: YandexScheduleAPI) {
         _viewModel = StateObject(wrappedValue: StationScheduleViewModel(api: api))
     }
-
+    
     var body: some View {
         NavigationView {
             Group {
@@ -31,13 +31,13 @@ struct StationScheduleView: View {
                                         .foregroundColor(.secondary)
                                 }
                             }
-
+                            
                             if let departure = trip.departure {
                                 Text("Отправление: \(formatted(date: departure))")
                                     .font(.subheadline)
                                     .foregroundColor(.secondary)
                             }
-
+                            
                             if let carrier = trip.thread?.carrier?.title {
                                 Text("Перевозчик: \(carrier)")
                                     .font(.footnote)
@@ -54,7 +54,7 @@ struct StationScheduleView: View {
             }
         }
     }
-
+    
     private func formatted(date: Date) -> String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "ru_RU")

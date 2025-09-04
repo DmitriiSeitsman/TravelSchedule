@@ -1,15 +1,17 @@
 import SwiftUI
+
 // MARK: - Results
 struct ResultsView: View {
     let from: String
     let to: String
     @Environment(\.dismiss) private var dismiss
-
+    
     @State private var showFilters = false
     @State private var items: [SegmentItem] = SegmentItem.mock
     @State private var isLoading = false
     @State private var error: String?
     @State private var filtersApplied = false
+    @State private var selectedItem: SegmentItem?
     
     var body: some View {
         ZStack {
@@ -34,9 +36,8 @@ struct ResultsView: View {
                     LazyVStack(spacing: 12) {
                         ForEach(items) { item in
                             SegmentCard(item: item)
-                                .onTapGesture {
-                                    // TODO: переход на детали рейса
-                                }
+                                .contentShape(Rectangle())
+                                .onTapGesture { selectedItem = item }
                         }
                     }
                     .padding([.horizontal, .vertical], 16)
@@ -65,14 +66,11 @@ struct ResultsView: View {
                     .padding(.horizontal, 16)
             }
             .padding(.top, 16)
-            .padding(.bottom, 0)
         }
         .safeAreaInset(edge: .bottom) {
             if !items.isEmpty {
                 VStack(spacing: 0) {
-                    Button {
-                        showFilters = true
-                    } label: {
+                    Button { showFilters = true } label: {
                         HStack(spacing: 4) {
                             Text("Уточнить время")
                                 .font(.system(size: 17, weight: .bold))
@@ -93,24 +91,33 @@ struct ResultsView: View {
                 }
             }
         }
+        .navigationDestination(item: $selectedItem) { item in
+            CarrierInfoViewStub(
+                carrierName: item.carrierName,
+                carrierCode: item.carrierCode,
+                carrierLogo: item.carrierLogo
+            )
+            .toolbar(.hidden, for: .tabBar)
+        }
         .navigationDestination(isPresented: $showFilters) {
             FiltersView(
                 onBack: { showFilters = false },
-                onApply: { filtersApplied = true; showFilters = false } // <-- NEW
+                onApply: { filtersApplied = true; showFilters = false }
             )
         }
         .onAppear { load() }
     }
-
+    
     private func load() {
         isLoading = false
         error = nil
     }
 }
+
 // MARK: - Card
 private struct SegmentCard: View {
     let item: SegmentItem
-
+    
     var body: some View {
         VStack(spacing: 4) {
             HStack(spacing: 4) {
@@ -125,8 +132,7 @@ private struct SegmentCard: View {
                     }
                 }
                 .frame(width: 38, height: 38)
-                //.background(Color.white)
-
+                
                 VStack(alignment: .leading, spacing: 0) {
                     Text(item.carrierName)
                         .font(.system(size: 17, weight: .regular))
@@ -135,29 +141,25 @@ private struct SegmentCard: View {
                         Text(transfer)
                             .font(.system(size: 12, weight: .regular))
                             .foregroundColor(.redUniversal)
-    
                     }
                 }
-                //.background(Color.yellow)
-
+                
                 Spacer()
                 Text(item.departureDateShort)
                     .font(.system(size: 12, weight: .regular))
                     .foregroundColor(.blackUniversal)
-
             }
-            //.background(Color.blue)
-
+            
             HStack {
                 Text(item.departureTime)
                     .font(.system(size: 17, weight: .regular))
                     .foregroundColor(.blackUniversal)
-
+                
                 ZStack {
                     Capsule()
                         .fill(Color.grayUniversal)
                         .frame(height: 1)
-
+                    
                     Text(item.durationText)
                         .font(.system(size: 12, weight: .regular))
                         .foregroundColor(.blackUniversal)
@@ -165,17 +167,12 @@ private struct SegmentCard: View {
                         .padding(.vertical, 3)
                         .background(.simpleGray)
                 }
-                .padding(.horizontal, 0)
-                //.background(Color.red)
-
+                
                 Text(item.arrivalTime)
                     .font(.system(size: 17, weight: .regular))
                     .foregroundColor(.blackUniversal)
             }
-            //.background(Color.green)
             .frame(height: 40)
-
-
         }
         .padding(8)
         .background(
@@ -185,6 +182,7 @@ private struct SegmentCard: View {
         )
     }
 }
+
 #Preview {
     ResultsView(from: "Санкт-Петербург", to: "Москва (Ленинградский вокзал)")
 }
