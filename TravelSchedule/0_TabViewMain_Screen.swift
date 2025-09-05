@@ -152,7 +152,7 @@ struct StoryCard: View {
                 story.backgroundColor
             }
             
-            if !isViewed {
+            if isViewed {
                 Color.white.opacity(0.5)
             }
             
@@ -169,7 +169,7 @@ struct StoryCard: View {
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .stroke(isViewed ? Color.blueUniversal : Color.clear, lineWidth: 3)
+                .stroke(isViewed ? Color.clear  : Color.blueUniversal, lineWidth: 3)
         )
     }
 }
