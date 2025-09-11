@@ -22,74 +22,50 @@ struct ContentView: View {
 
 // MARK: - Schedule
 struct ScheduleScreen: View {
-    @State private var from = StationSelection()
-    @State private var to   = StationSelection()
-    
-    // stories
-    @State private var viewedStories: Set<Int> = []
-    @State private var currentStoryIndex: Int? = nil
-    @State private var showStory = false
-    
-    private let stories: [Stories] = [.story1, .story2, .story3, .story4, .story5, .story6]
-    
-    @State private var showFromSearch = false
-    @State private var showToSearch = false
-    @StateObject private var stationsVM: AllStationsViewModel
-    private let api: YandexScheduleAPI
-    
-    private var fromText: Binding<String> {
-        Binding(get: { from.displayText }, set: { from.displayText = $0 })
-    }
-    private var toText: Binding<String> {
-        Binding(get: { to.displayText }, set: { to.displayText = $0 })
-    }
+    @StateObject private var vm: ScheduleViewModel
     
     init() {
         guard let url = URL(string: "https://api.rasp.yandex.net") else {
-            fatalError("Invalid base URL for YandexScheduleAPI")
+            fatalError("Invalid base URL")
         }
         let api = YandexScheduleAPI(
             client: Client(serverURL: url, transport: URLSessionTransport()),
             apikey: API.key
         )
-        self.api = api
-        _stationsVM = StateObject(wrappedValue: AllStationsViewModel(api: api))
+        _vm = StateObject(wrappedValue: ScheduleViewModel(api: api))
     }
-    
-    private let locationService: LocationServiceProtocol = LocationService()
-    var canSearch: Bool { !from.isEmpty && !to.isEmpty }
     
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
+                // stories
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
-                        ForEach(stories.indices, id: \.self) { i in
-                            let s = stories[i]
-                            StoryCard(story: s, isViewed: viewedStories.contains(i))
-                                .onTapGesture {
-                                    viewedStories.insert(i)
-                                    currentStoryIndex = i
-                                    showStory = true
-                                }
+                        ForEach(vm.stories.indices, id: \.self) { i in
+                            let s = vm.stories[i]
+                            StoryCard(story: s, isViewed: vm.viewedStories.contains(i))
+                                .onTapGesture { vm.openStory(at: i) }
                         }
                     }
                     .padding(.horizontal, 16)
                 }
                 .padding(.vertical, 24)
                 
+                // панель поиска
                 SearchPanel(
-                    from: fromText,
-                    to: toText,
-                    onSwap: { swap(&from, &to) },
-                    onFromTap: { showFromSearch = true },
-                    onToTap: { showToSearch = true }
+                    from: $vm.from,
+                    to: $vm.to,
+                    onSwap: vm.swapStations,
+                    onFromTap: { vm.showFromSearch = true },
+                    onToTap: { vm.showToSearch = true }
                 )
+
                 .padding(.top, 20)
                 .padding([.horizontal, .bottom], 16)
-                if canSearch {
+                
+                if vm.canSearch {
                     NavigationLink {
-                        ResultsView(from: from.displayText, to: to.displayText)
+                        ResultsView(from: vm.from.displayText, to: vm.to.displayText)
                     } label: {
                         Text("Найти")
                             .font(.system(size: 17, weight: .bold))
@@ -101,39 +77,39 @@ struct ScheduleScreen: View {
                 }
             }
         }
-        
-        .navigationDestination(isPresented: $showFromSearch) {
+        // навигация к поиску
+        .navigationDestination(isPresented: $vm.showFromSearch) {
             CitySearchView(
                 title: "Откуда",
-                selection: fromText,
-                stationsVM: stationsVM,
-                locationService: locationService,
-                api: api
+                selection: $vm.from, // пробрасываем StationSelection
+                stationsVM: vm.stationsVM,
+                locationService: vm.locationService,
+                api: vm.api
             )
             .toolbar(.hidden, for: .tabBar)
         }
-        .navigationDestination(isPresented: $showToSearch) {
+        .navigationDestination(isPresented: $vm.showToSearch) {
             CitySearchView(
                 title: "Куда",
-                selection: toText,
-                stationsVM: stationsVM,
-                locationService: locationService,
-                api: api
+                selection: $vm.to, // пробрасываем StationSelection
+                stationsVM: vm.stationsVM,
+                locationService: vm.locationService,
+                api: vm.api
             )
             .toolbar(.hidden, for: .tabBar)
         }
-        .fullScreenCover(isPresented: $showStory) {
-            if let idx = currentStoryIndex {
+        // stories
+        .fullScreenCover(isPresented: $vm.showStory) {
+            if let idx = vm.currentStoryIndex {
                 MainStoryView(
-                    stories: stories,
+                    stories: vm.stories,
                     startIndex: idx,
-                    onClose: { showStory = false }
+                    onClose: vm.closeStory
                 )
             }
         }
     }
 }
-
 
 // MARK: - Story card
 struct StoryCard: View {
@@ -176,8 +152,8 @@ struct StoryCard: View {
 
 // MARK: - Панель поиска
 struct SearchPanel: View {
-    @Binding var from: String
-    @Binding var to: String
+    @Binding var from: StationSelection
+    @Binding var to: StationSelection
     let onSwap: () -> Void
     let onFromTap: () -> Void
     let onToTap: () -> Void
@@ -196,9 +172,9 @@ struct SearchPanel: View {
             VStack(alignment: .leading, spacing: 0) {
                 Button(action: onFromTap) {
                     HStack {
-                        Text(from.isEmpty ? "Откуда" : from)
+                        Text(from.displayText.isEmpty ? "Откуда" : from.displayText)
                             .font(.system(size: 17, weight: .regular))
-                            .foregroundStyle(from.isEmpty ? .gray : .blackUniversal)
+                            .foregroundStyle(from.displayText.isEmpty ? .gray : .blackUniversal)
                         Spacer()
                     }
                     .padding(.horizontal, 16)
@@ -209,9 +185,9 @@ struct SearchPanel: View {
                 
                 Button(action: onToTap) {
                     HStack {
-                        Text(to.isEmpty ? "Куда" : to)
+                        Text(to.displayText.isEmpty ? "Куда" : to.displayText)
                             .font(.system(size: 17, weight: .regular))
-                            .foregroundStyle(to.isEmpty ? .gray : .blackUniversal)
+                            .foregroundStyle(to.displayText.isEmpty ? .gray : .blackUniversal)
                         Spacer()
                     }
                     .padding(.horizontal, 16)
@@ -233,6 +209,5 @@ struct SearchPanel: View {
         }
     }
 }
-
 // MARK: - Preview
 #Preview { ContentView() }
