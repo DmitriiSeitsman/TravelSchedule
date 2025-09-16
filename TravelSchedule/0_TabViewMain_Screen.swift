@@ -25,7 +25,8 @@ struct ContentView: View {
 
 struct ScheduleScreen: View {
     @StateObject private var vm: ScheduleViewModel
-    
+    @State private var error: AppError?
+
     init() {
         guard let url = URL(string: "https://api.rasp.yandex.net") else {
             fatalError("Invalid base URL")
@@ -36,10 +37,11 @@ struct ScheduleScreen: View {
         )
         _vm = StateObject(wrappedValue: ScheduleViewModel(api: api))
     }
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
+
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
                         ForEach(vm.stories.indices, id: \.self) { i in
@@ -51,6 +53,7 @@ struct ScheduleScreen: View {
                     .padding(.horizontal, 16)
                 }
                 .padding(.vertical, 24)
+
                 SearchPanel(
                     from: $vm.from,
                     to: $vm.to,
@@ -60,7 +63,7 @@ struct ScheduleScreen: View {
                 )
                 .padding(.top, 20)
                 .padding([.horizontal, .bottom], 16)
-                
+
                 if vm.canSearch {
                     NavigationLink {
                         ResultsView(
@@ -70,6 +73,7 @@ struct ScheduleScreen: View {
                             toTitle: vm.to.displayText,
                             api: vm.api
                         )
+                        .toolbar(.hidden, for: .tabBar)
                     } label: {
                         Text("Найти")
                             .font(.system(size: 17, weight: .bold))
@@ -79,9 +83,9 @@ struct ScheduleScreen: View {
                             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                     }
                 }
-                
             }
         }
+
         .navigationDestination(isPresented: $vm.showFromSearch) {
             CitySearchView(
                 title: "Откуда",
@@ -111,6 +115,41 @@ struct ScheduleScreen: View {
                 )
             }
         }
+        .navigationDestination(item: $error) { err in
+            switch err {
+            case .connection:
+                ConnectionErrorView()
+                    .toolbar(.hidden, for: .tabBar)
+            case .server:
+                ServerErrorView()
+                    .toolbar(.hidden, for: .tabBar)
+            }
+        }
+        .onAppear {
+            Task {
+                do {
+                    try await vm.loadInitialData()
+                } catch {
+                    self.error = mapError(error)
+                }
+            }
+        }
+    }
+
+    // MARK: - Helpers
+    private func mapError(_ error: Error) -> AppError {
+        if let urlError = error as? URLError {
+            switch urlError.code {
+            case .notConnectedToInternet,
+                 .timedOut,
+                 .cannotFindHost,
+                 .cannotConnectToHost:
+                return .connection
+            default:
+                return .server
+            }
+        }
+        return .server
     }
 }
 

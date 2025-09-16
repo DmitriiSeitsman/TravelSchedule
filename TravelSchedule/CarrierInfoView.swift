@@ -9,11 +9,14 @@ struct CarrierInfoView: View {
     
     @State private var carrier: Components.Schemas.Carrier?
     @State private var isLoading = false
+    @State private var showConnectionError = false
+    @State private var showServerError = false
     
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 
+                // Логотип
                 if let logo = carrier?.logo,
                    let url = URL(string: logo.hasPrefix("http") ? logo : "https:" + logo) {
                     HStack {
@@ -30,19 +33,20 @@ struct CarrierInfoView: View {
                     .padding(.top, 16)
                 }
                 
+                // Название
                 Text(formattedTitle(carrier?.title ?? "Без названия"))
                     .font(.system(size: 24, weight: .bold))
                     .foregroundColor(.ypBlack)
                     .padding(.top, 8)
                 
-                // MARK: - Email
+                // Email
                 infoBlock(title: "E-mail", value: extractedEmail(), linkPrefix: "mailto:")
                     .padding(.top, 8)
                 
-                // MARK: - Телефон
+                // Телефон
                 infoBlock(title: "Телефон", value: extractedPhone(), linkPrefix: "tel:", applyDigits: true)
                 
-                // MARK: - Сайт
+                // Сайт
                 if let urlString = carrier?.url,
                    let url = URL(string: urlString) {
                     VStack(alignment: .leading, spacing: 6) {
@@ -64,11 +68,23 @@ struct CarrierInfoView: View {
         .navigationBarTitleDisplayMode(.inline)
         .background(Color(.systemBackground))
         .onAppear { loadCarrierInfo() }
+        // Навигация на экраны ошибок
+        .navigationDestination(isPresented: $showConnectionError) {
+            ConnectionErrorView()
+                .toolbar(.hidden, for: .tabBar)
+        }
+        .navigationDestination(isPresented: $showServerError) {
+            ServerErrorView()
+                .toolbar(.hidden, for: .tabBar)
+        }
     }
     
     // MARK: - Helpers
     private func loadCarrierInfo() {
         isLoading = true
+        
+        let api = self.api
+        
         Task {
             if carrierCode.isEmpty || !["iata", "icao", "sirena"].contains(system.lowercased()) {
                 await MainActor.run {
@@ -92,12 +108,22 @@ struct CarrierInfoView: View {
                 }
             } catch {
                 await MainActor.run {
-                    self.carrier = fallbackCarrier
                     self.isLoading = false
+                    if let urlError = error as? URLError {
+                        switch urlError.code {
+                        case .notConnectedToInternet, .timedOut, .cannotFindHost, .cannotConnectToHost:
+                            self.showConnectionError = true
+                        default:
+                            self.showServerError = true
+                        }
+                    } else {
+                        self.showServerError = true
+                    }
                 }
             }
         }
     }
+
     
     private func formattedTitle(_ raw: String) -> String {
         let cleaned = raw.replacingOccurrences(of: "/ФПК", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
