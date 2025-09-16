@@ -80,7 +80,7 @@ struct RouteSearchView: View {
             )
             let api = YandexScheduleAPI(client: client, apikey: API.key)
 
-            let result = try await api.routeSearch.getRoutes(
+            let result = try await api.searchRoutes(
                 from: "s9600213", // Москва
                 to: "s9600370"    // Екатеринбург
             )

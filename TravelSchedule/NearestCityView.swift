@@ -79,9 +79,9 @@ struct NearestCityView: View {
 
         do {
             let coordinate = try await locationService.requestCurrentLocation()
-            let result = try await api.nearestCity.getNearestCity(
+            let result = try await api.getNearestCity(
                 lat: coordinate.latitude,
-                lng: coordinate.longitude,
+                lon: coordinate.longitude,
                 distance: 50
             )
             state = .loaded(result)

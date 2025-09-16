@@ -2,13 +2,11 @@ import Foundation
 import OpenAPIRuntime
 import OpenAPIURLSession
 
-typealias StationSchedule = Components.Schemas.ScheduleResponse
-
 protocol StationScheduleServiceProtocol {
-    func getStationSchedule() async throws -> StationSchedule
+    func getStationSchedule(station: String, date: Date?, transport: String?) async throws -> Components.Schemas.ScheduleResponse
 }
 
-final class StationScheduleService: StationScheduleServiceProtocol {
+final class StationScheduleService: StationScheduleServiceProtocol, @unchecked Sendable {
     private let client: Client
     private let apikey: String
     
@@ -17,16 +15,23 @@ final class StationScheduleService: StationScheduleServiceProtocol {
         self.apikey = apikey
     }
     
-    func getStationSchedule() async throws -> StationSchedule {
-        let today = ISO8601DateFormatter().string(from: Date()).prefix(10)
+    func getStationSchedule(
+        station: String,
+        date: Date? = nil,
+        transport: String? = nil
+    ) async throws -> Components.Schemas.ScheduleResponse {
+        
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withFullDate]
+        let dateString = date.map { formatter.string(from: $0) }
         
         let response = try await client.getStationSchedule(
             query: .init(
                 apikey: apikey,
-                station: "s2006004",
+                station: station,
                 format: "json",
-                date: String(today),
-                transport_types: "train",
+                date: dateString,
+                transport_types: transport
             )
         )
         

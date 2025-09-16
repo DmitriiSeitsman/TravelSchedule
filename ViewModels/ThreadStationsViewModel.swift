@@ -19,7 +19,7 @@ final class ThreadStationsViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
         do {
-            let stationsResponse = try await api.threadStations.getRouteStations(fromStationCode: fromCode)
+            let stationsResponse = try await api.getThreadStations(fromStationCode: fromCode)
             threadInfo = stationsResponse
         } catch {
             print("❌ Ошибка загрузки станций следования: \(error)")

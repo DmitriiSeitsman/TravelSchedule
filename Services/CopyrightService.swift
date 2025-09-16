@@ -6,7 +6,7 @@ protocol CopyrightServiceProtocol {
     func getCopyright() async throws -> Components.Schemas.Copyright
 }
 
-final class CopyrightService: CopyrightServiceProtocol {
+final class CopyrightService: CopyrightServiceProtocol, @unchecked Sendable {
     private let client: Client
     private let apikey: String
 

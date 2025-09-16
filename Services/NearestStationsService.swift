@@ -8,7 +8,7 @@ protocol NearestStationsServiceProtocol {
     func getNearestStations(lat: Double, lng: Double, distance: Int) async throws -> NearestStations
 }
 
-final class NearestStationsService: NearestStationsServiceProtocol {
+final class NearestStationsService: NearestStationsServiceProtocol, @unchecked Sendable {
     private let client: Client
     private let apikey: String
 
@@ -30,8 +30,8 @@ final class NearestStationsService: NearestStationsServiceProtocol {
                     lat: lat,
                     lng: lng,
                     distance: distance,
-                    lang: "ru_RU",   // локализация
-                    format: "json"   // формат ответа
+                    lang: "ru_RU",
+                    format: "json"
                 )
             )
         )

@@ -8,7 +8,7 @@ protocol AllStationsServiceProtocol {
     func getAllStations() async throws -> AllStations
 }
 
-final class AllStationsService: AllStationsServiceProtocol {
+final class AllStationsService: AllStationsServiceProtocol, @unchecked Sendable {
     private let client: Client
     private let apikey: String
 
