@@ -16,7 +16,6 @@ struct CarrierInfoView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 
-                // Логотип
                 if let logo = carrier?.logo,
                    let url = URL(string: logo.hasPrefix("http") ? logo : "https:" + logo) {
                     HStack {
@@ -33,20 +32,16 @@ struct CarrierInfoView: View {
                     .padding(.top, 16)
                 }
                 
-                // Название
                 Text(formattedTitle(carrier?.title ?? "Без названия"))
                     .font(.system(size: 24, weight: .bold))
                     .foregroundColor(.ypBlack)
                     .padding(.top, 8)
                 
-                // Email
                 infoBlock(title: "E-mail", value: extractedEmail(), linkPrefix: "mailto:")
                     .padding(.top, 8)
                 
-                // Телефон
                 infoBlock(title: "Телефон", value: extractedPhone(), linkPrefix: "tel:", applyDigits: true)
                 
-                // Сайт
                 if let urlString = carrier?.url,
                    let url = URL(string: urlString) {
                     VStack(alignment: .leading, spacing: 6) {
@@ -68,7 +63,7 @@ struct CarrierInfoView: View {
         .navigationBarTitleDisplayMode(.inline)
         .background(Color(.systemBackground))
         .onAppear { loadCarrierInfo() }
-        // Навигация на экраны ошибок
+
         .navigationDestination(isPresented: $showConnectionError) {
             ConnectionErrorView()
                 .toolbar(.hidden, for: .tabBar)

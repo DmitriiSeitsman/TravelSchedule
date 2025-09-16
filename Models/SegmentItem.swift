@@ -19,24 +19,13 @@ struct SegmentItem: Identifiable, Hashable {
 
 // MARK: - Placeholder
 struct ContentPlaceholder: View {
-    //let systemImage: String
+
     let title: String
-   // let subtitle: String
 
     var body: some View {
         VStack(spacing: 8) {
-//            Image(systemName: systemImage).font(.system(size: 44))
-//                .foregroundStyle(.secondary)
             Text(title).font(.system(size: 24, weight: .bold))
-//            Text(subtitle)
-//                .foregroundStyle(.secondary)
-//                .multilineTextAlignment(.center)
         }
         .padding()
     }
 }
-
-//// MARK: - Preview
-//#Preview {
-//    ResultsView(from: "Москва (Ярославский вокзал)", to: "Санкт-Петербург (Балтийский вокзал)")
-//}

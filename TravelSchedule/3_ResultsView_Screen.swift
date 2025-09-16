@@ -313,9 +313,11 @@ private struct SegmentCard: View {
 }
 
 // MARK: - Segment mapping
+
 fileprivate let shortDateFormatter: DateFormatter = {
     let f = DateFormatter()
-    f.dateFormat = "dd.MM"
+    f.locale = Locale(identifier: "ru_RU")
+    f.setLocalizedDateFormatFromTemplate("d MMMM")
     return f
 }()
 
