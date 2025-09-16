@@ -2,6 +2,7 @@ import SwiftUI
 import OpenAPIURLSession
 
 // MARK: - Root
+
 struct ContentView: View {
     enum selectedTab { case schedule, settings }
     @State private var tab: selectedTab = .schedule
@@ -21,6 +22,7 @@ struct ContentView: View {
 }
 
 // MARK: - Schedule
+
 struct ScheduleScreen: View {
     @StateObject private var vm: ScheduleViewModel
     
@@ -38,7 +40,6 @@ struct ScheduleScreen: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
-                // stories
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
                         ForEach(vm.stories.indices, id: \.self) { i in
@@ -50,8 +51,6 @@ struct ScheduleScreen: View {
                     .padding(.horizontal, 16)
                 }
                 .padding(.vertical, 24)
-                
-                // панель поиска
                 SearchPanel(
                     from: $vm.from,
                     to: $vm.to,
@@ -59,13 +58,18 @@ struct ScheduleScreen: View {
                     onFromTap: { vm.showFromSearch = true },
                     onToTap: { vm.showToSearch = true }
                 )
-
                 .padding(.top, 20)
                 .padding([.horizontal, .bottom], 16)
                 
                 if vm.canSearch {
                     NavigationLink {
-                        ResultsView(from: vm.from.displayText, to: vm.to.displayText)
+                        ResultsView(
+                            fromCode: vm.from.code,
+                            toCode: vm.to.code,
+                            fromTitle: vm.from.displayText,
+                            toTitle: vm.to.displayText,
+                            api: vm.api
+                        )
                     } label: {
                         Text("Найти")
                             .font(.system(size: 17, weight: .bold))
@@ -75,30 +79,29 @@ struct ScheduleScreen: View {
                             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                     }
                 }
+                
             }
         }
-        // навигация к поиску
         .navigationDestination(isPresented: $vm.showFromSearch) {
             CitySearchView(
                 title: "Откуда",
-                selection: $vm.from, // пробрасываем StationSelection
+                selection: $vm.from,
                 stationsVM: vm.stationsVM,
                 locationService: vm.locationService,
-                api: vm.api
+                api: vm.api as! YandexScheduleAPI
             )
             .toolbar(.hidden, for: .tabBar)
         }
         .navigationDestination(isPresented: $vm.showToSearch) {
             CitySearchView(
                 title: "Куда",
-                selection: $vm.to, // пробрасываем StationSelection
+                selection: $vm.to,
                 stationsVM: vm.stationsVM,
                 locationService: vm.locationService,
-                api: vm.api
+                api: vm.api as! YandexScheduleAPI
             )
             .toolbar(.hidden, for: .tabBar)
         }
-        // stories
         .fullScreenCover(isPresented: $vm.showStory) {
             if let idx = vm.currentStoryIndex {
                 MainStoryView(
@@ -112,6 +115,7 @@ struct ScheduleScreen: View {
 }
 
 // MARK: - Story card
+
 struct StoryCard: View {
     let story: Stories
     let isViewed: Bool
@@ -150,7 +154,7 @@ struct StoryCard: View {
     }
 }
 
-// MARK: - Панель поиска
+// MARK: - Search panel
 struct SearchPanel: View {
     @Binding var from: StationSelection
     @Binding var to: StationSelection
@@ -210,4 +214,5 @@ struct SearchPanel: View {
     }
 }
 // MARK: - Preview
+
 #Preview { ContentView() }

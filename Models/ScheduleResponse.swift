@@ -24,6 +24,8 @@ struct ScheduleResponse: Codable {
     let pagination: Pagination
 }
 
+
+
 struct SearchInfo: Codable {
     let from: Station
     let to: Station
@@ -39,9 +41,9 @@ struct Station: Codable {
 
 struct StationSelection {
     var displayText: String = ""
+    var code: String = ""
     var isEmpty: Bool { displayText.isEmpty }
 }
-
 
 struct Segment: Codable {
     let thread: ThreadInfo

@@ -3,10 +3,10 @@ import OpenAPIURLSession
 import Foundation
 
 protocol RouteSearchServiceProtocol {
-    func getRoutes(from: String, to: String) async throws -> Components.Schemas.Segments
+    func getRoutes(from: String, to: String, transport: String?) async throws -> Components.Schemas.Segments
 }
 
-final class RouteSearchService: RouteSearchServiceProtocol {
+final class RouteSearchService: RouteSearchServiceProtocol, @unchecked Sendable {
     private let client: Client
     private let apikey: String
 
@@ -15,7 +15,7 @@ final class RouteSearchService: RouteSearchServiceProtocol {
         self.apikey = apikey
     }
 
-    func getRoutes(from: String, to: String) async throws -> Components.Schemas.Segments {
+    func getRoutes(from: String, to: String, transport: String? = nil) async throws -> Components.Schemas.Segments {
         let today = DateFormatterForYandex.request.string(from: Date())
 
         let response = try await client.getSchedualBetweenStations(
@@ -26,8 +26,8 @@ final class RouteSearchService: RouteSearchServiceProtocol {
                     to: to,
                     format: "json",
                     date: today,
-                    transport_types: "plane",
-                    limit: 10
+                    transport_types: transport,
+                    limit: 20
                 )
             )
         )
@@ -35,7 +35,6 @@ final class RouteSearchService: RouteSearchServiceProtocol {
         switch response {
         case .ok(let result):
             return try result.body.json
-
         case .undocumented(let status, let data):
             var buffer = Data()
             if let body = data.body {

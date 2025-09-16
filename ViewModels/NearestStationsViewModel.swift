@@ -15,21 +15,18 @@ final class NearestStationsViewModel: ObservableObject {
 
     func load() async {
         state = .loading
-
         do {
             let location = try await locationService.requestCurrentLocation()
-            print("🌍 Локация: \(location.latitude), \(location.longitude)")
+            print("📍 Локация: \(location.latitude), \(location.longitude)")
 
-            let result = try await api.nearestStations.getNearestStations(
+            let stations = try await api.getNearestStations(
                 lat: location.latitude,
-                lng: location.longitude,
+                lon: location.longitude,
                 distance: 50
             )
 
-            let stations = (result.stations ?? []).compactMap { $0 }
             print("✅ Найдено станций: \(stations.count)")
             state = .loaded(stations)
-
         } catch {
             let nsError = error as NSError
             if nsError.code == 1 {

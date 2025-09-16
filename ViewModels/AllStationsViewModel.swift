@@ -13,50 +13,63 @@ final class AllStationsViewModel: ObservableObject {
     @Published var errorMessage: String?
     private(set) var didLoad = false
 
-    private let api: YandexScheduleAPI
+    private let api: YandexScheduleAPIProtocol
     
-    init(api: YandexScheduleAPI) {
+    init(api: YandexScheduleAPIProtocol) {
         self.api = api
     }
 
     func loadStations() async {
         guard !didLoad else { return }
         didLoad = true
-
         isLoading = true
         errorMessage = nil
         defer { isLoading = false }
 
         do {
-            let response = try await api.allStations.getAllStations()
-            
-            countries = (response.countries ?? [])
-                .sorted { ($0.title ?? "") < ($1.title ?? "") }
-                .map { country in
-                    var sortedCountry = country
-                    sortedCountry.regions = country.regions?
-                        .sorted { ($0.title ?? "") < ($1.title ?? "") }
-                        .map { region in
-                            var sortedRegion = region
-                            sortedRegion.settlements = region.settlements?
-                                .sorted { ($0.title ?? "") < ($1.title ?? "") }
-                                .map { settlement in
-                                    var sortedSettlement = settlement
-                                    sortedSettlement.stations = settlement.stations?
-                                        .sorted { ($0.title ?? "") < ($1.title ?? "") }
-                                    return sortedSettlement
-                                }
-                            return sortedRegion
-                        }
-                    return sortedCountry
-                }
+            let response = try await api.getAllStations()
+            self.countries = self.sortCountries(response)
         } catch {
-            print("❌ Ошибка загрузки станций: \(error)")
-            errorMessage = "Не удалось загрузить станции"
+            self.errorMessage = "Не удалось загрузить станции"
         }
     }
 }
 
+// MARK: - Sorting Helpers
+private extension AllStationsViewModel {
+    func sortCountries(_ countries: [Country]) -> [Country] {
+        countries.sorted { ($0.title ?? "") < ($1.title ?? "") }
+            .map { country in
+                var sortedCountry = country
+                sortedCountry.regions = sortRegions(country.regions)
+                return sortedCountry
+            }
+    }
+
+    func sortRegions(_ regions: [Region]?) -> [Region] {
+        (regions ?? []).sorted { ($0.title ?? "") < ($1.title ?? "") }
+            .map { region in
+                var sortedRegion = region
+                sortedRegion.settlements = sortSettlements(region.settlements)
+                return sortedRegion
+            }
+    }
+
+    func sortSettlements(_ settlements: [Settlement]?) -> [Settlement] {
+        (settlements ?? []).sorted { ($0.title ?? "") < ($1.title ?? "") }
+            .map { settlement in
+                var sortedSettlement = settlement
+                sortedSettlement.stations = sortStations(settlement.stations)
+                return sortedSettlement
+            }
+    }
+
+    func sortStations(_ stations: [Station]?) -> [Station] {
+        (stations ?? []).sorted { ($0.title ?? "") < ($1.title ?? "") }
+    }
+}
+
+// MARK: - Queries
 extension AllStationsViewModel {
     func stations(forCityCode cityCode: String) -> [StationItem] {
         let settlements = countries
@@ -67,7 +80,8 @@ extension AllStationsViewModel {
         let items = settlements
             .flatMap { $0.stations ?? [] }
             .compactMap { st -> StationItem? in
-                guard let code = st.codes?.yandex_code, let title = st.title else { return nil }
+                guard let code = st.codes?.yandex_code,
+                      let title = st.title else { return nil }
                 return StationItem(
                     id: code,
                     title: title,

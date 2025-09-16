@@ -4,9 +4,11 @@ import OpenAPIRuntime
 
 protocol ThreadStationsServiceProtocol {
     func getRouteStations(fromStationCode: String) async throws -> Components.Schemas.ThreadStationsResponse
+    func getRouteStationsRaw(uid: String) async throws -> Components.Schemas.ThreadStationsResponse
 }
 
-final class ThreadStationsService: ThreadStationsServiceProtocol {
+
+final class ThreadStationsService: ThreadStationsServiceProtocol, @unchecked Sendable {
     private let client: Client
     private let apikey: String
     private let stationScheduleService: StationScheduleServiceProtocol
@@ -18,7 +20,12 @@ final class ThreadStationsService: ThreadStationsServiceProtocol {
     }
     
     func getRouteStations(fromStationCode: String) async throws -> Components.Schemas.ThreadStationsResponse {
-        let scheduleResponse = try await stationScheduleService.getStationSchedule()
+        let scheduleResponse = try await stationScheduleService.getStationSchedule(
+            station: fromStationCode,
+            date: nil,
+            transport: nil
+        )
+        
         guard let firstUID = scheduleResponse.schedule?.first?.thread?.uid else {
             throw URLError(.badServerResponse)
         }
@@ -26,6 +33,7 @@ final class ThreadStationsService: ThreadStationsServiceProtocol {
         
         return try await getRouteStationsRaw(uid: firstUID)
     }
+    
     //Почему собираем запрос вручную:
     // Автогенерированный метод getRouteStations из swift-openapi-generator
     // сразу пытается декодировать ответ в Components.Schemas.ThreadStationsResponse

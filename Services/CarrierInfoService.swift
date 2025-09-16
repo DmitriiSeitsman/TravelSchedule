@@ -7,7 +7,7 @@ protocol CarrierInfoServiceProtocol {
 }
 
 
-final class CarrierInfoService: CarrierInfoServiceProtocol {
+final class CarrierInfoService: CarrierInfoServiceProtocol, @unchecked Sendable {
     
     private let client: Client
     private let apikey: String
