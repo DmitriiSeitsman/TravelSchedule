@@ -28,11 +28,16 @@ struct ScheduleScreen: View {
     @State private var error: AppError?
 
     init() {
-        guard let url = URL(string: "https://api.rasp.yandex.net") else {
-            fatalError("Invalid base URL")
+        let url = URL(string: "https://api.rasp.yandex.net")
+        if url == nil {
+            assertionFailure("Invalid base URL")
         }
+
         let api = YandexScheduleAPI(
-            client: Client(serverURL: url, transport: URLSessionTransport()),
+            client: Client(
+                serverURL: url ?? URL(string: "https://example.com")!,
+                transport: URLSessionTransport()
+            ),
             apikey: API.key
         )
         _vm = StateObject(wrappedValue: ScheduleViewModel(api: api))

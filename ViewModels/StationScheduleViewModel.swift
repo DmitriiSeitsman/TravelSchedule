@@ -1,9 +1,6 @@
 import Foundation
 import Combine
 
-import Foundation
-import Combine
-
 @MainActor
 final class StationScheduleViewModel: ObservableObject {
     @Published var trips: [Components.Schemas.Schedule] = []

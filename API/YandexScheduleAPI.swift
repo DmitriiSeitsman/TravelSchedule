@@ -1,7 +1,7 @@
 import Foundation
 import OpenAPIURLSession
 
-public actor YandexScheduleAPI: YandexScheduleAPIProtocol {
+actor YandexScheduleAPI: YandexScheduleAPIProtocol {
     
     typealias CopyrightInfo = Components.Schemas.Copyright
     typealias Carrier = Components.Schemas.Carrier

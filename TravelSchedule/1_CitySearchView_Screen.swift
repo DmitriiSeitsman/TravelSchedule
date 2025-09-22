@@ -52,7 +52,7 @@ struct CitySearchView: View {
                             Spacer()
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 17))
-                                .foregroundColor(.ypBlack)
+                                .foregroundStyle(.ypBlack)
                         }
                     }
                     .buttonStyle(.plain)

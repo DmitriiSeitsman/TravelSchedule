@@ -28,15 +28,15 @@ struct ErrorView: View {
 
     private var imageName: String {
         switch error {
-        case .connection: return "connectionError"
-        case .server: return "serverError"
+        case .connection: "connectionError"
+        case .server: "serverError"
         }
     }
 
     private var message: String {
         switch error {
-        case .connection: return "нет интернета"
-        case .server: return "ошибка сервера"
+        case .connection: "нет интернета"
+        case .server: "ошибка сервера"
         }
     }
 }
