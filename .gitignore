@@ -1,0 +1,56 @@
+# Xcode
+DerivedData/
+build/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.xcworkspace/xcuserdata
+*.xcuserstate
+*.moved-aside
+*.xcscmblueprint
+project.xcworkspace/contents.xcworkspacedata
+project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+
+# SwiftPM
+/.build/
+/Packages/
+/Package.pins
+/Package.resolved
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# Carthage
+Carthage/
+
+# Fastlane
+fastlane/report.xml
+fastlane/screenshots
+fastlane/test_output
+
+# Xcode Server
+xcschemes/xcschememanagement.plist
+
+# Archive
+*.xcarchive
+
+# User-specific
+*.swp
+*.orig
+*.DS_Store
+
+# Playground support
+timeline.xctimeline
+playground.xcworkspace
+
+# Bundle
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Firebase/GoogleService config (если используется, но не заливать публично!)
+GoogleService-Info.plist
+

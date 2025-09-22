@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		7B810DF82E38E3E0002505A7 /* OpenAPIRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = 7B810DF72E38E3E0002505A7 /* OpenAPIRuntime */; };
+		7B810DFB2E38E3FC002505A7 /* OpenAPIURLSession in Frameworks */ = {isa = PBXBuildFile; productRef = 7B810DFA2E38E3FC002505A7 /* OpenAPIURLSession */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		7B0903CC2E321F0000618EA0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -29,9 +34,22 @@
 		7B0903D52E321F0000618EA0 /* TravelScheduleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TravelScheduleUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		7BC2B0BF2E38F81800BA0BEA /* Exceptions for "TravelSchedule" folder in "TravelSchedule" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 7B0903BD2E321EFE00618EA0 /* TravelSchedule */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		7B0903C02E321EFE00618EA0 /* TravelSchedule */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				7BC2B0BF2E38F81800BA0BEA /* Exceptions for "TravelSchedule" folder in "TravelSchedule" target */,
+			);
 			path = TravelSchedule;
 			sourceTree = "<group>";
 		};
@@ -45,6 +63,41 @@
 			path = TravelScheduleUITests;
 			sourceTree = "<group>";
 		};
+		7B0CC8302E56F6F1009C108A /* NetworkErrors */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = NetworkErrors;
+			sourceTree = "<group>";
+		};
+		7B4094262E3905870036FB99 /* ViewModels */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		7B810E002E38E694002505A7 /* YAML */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = YAML;
+			sourceTree = "<group>";
+		};
+		7BBA63C82E3A587F00B1BAE3 /* Models */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Models;
+			sourceTree = "<group>";
+		};
+		7BBA63D02E3B585000B1BAE3 /* Helpers */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Helpers;
+			sourceTree = "<group>";
+		};
+		7BC2B0B02E38F01D00BA0BEA /* Services */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Services;
+			sourceTree = "<group>";
+		};
+		7BC2B0B32E38F41300BA0BEA /* API */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = API;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,6 +105,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B810DFB2E38E3FC002505A7 /* OpenAPIURLSession in Frameworks */,
+				7B810DF82E38E3E0002505A7 /* OpenAPIRuntime in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,6 +130,13 @@
 		7B0903B52E321EFE00618EA0 = {
 			isa = PBXGroup;
 			children = (
+				7B0CC8302E56F6F1009C108A /* NetworkErrors */,
+				7BBA63D02E3B585000B1BAE3 /* Helpers */,
+				7BBA63C82E3A587F00B1BAE3 /* Models */,
+				7B4094262E3905870036FB99 /* ViewModels */,
+				7BC2B0B32E38F41300BA0BEA /* API */,
+				7BC2B0B02E38F01D00BA0BEA /* Services */,
+				7B810E002E38E694002505A7 /* YAML */,
 				7B0903C02E321EFE00618EA0 /* TravelSchedule */,
 				7B0903CE2E321F0000618EA0 /* TravelScheduleTests */,
 				7B0903D82E321F0000618EA0 /* TravelScheduleUITests */,
@@ -106,12 +168,22 @@
 			buildRules = (
 			);
 			dependencies = (
+				7B899D222E39146300654DCB /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				7B0903C02E321EFE00618EA0 /* TravelSchedule */,
+				7B0CC8302E56F6F1009C108A /* NetworkErrors */,
+				7B4094262E3905870036FB99 /* ViewModels */,
+				7B810E002E38E694002505A7 /* YAML */,
+				7BBA63C82E3A587F00B1BAE3 /* Models */,
+				7BBA63D02E3B585000B1BAE3 /* Helpers */,
+				7BC2B0B02E38F01D00BA0BEA /* Services */,
+				7BC2B0B32E38F41300BA0BEA /* API */,
 			);
 			name = TravelSchedule;
 			packageProductDependencies = (
+				7B810DF72E38E3E0002505A7 /* OpenAPIRuntime */,
+				7B810DFA2E38E3FC002505A7 /* OpenAPIURLSession */,
 			);
 			productName = TravelSchedule;
 			productReference = 7B0903BE2E321EFE00618EA0 /* TravelSchedule.app */;
@@ -195,6 +267,11 @@
 			);
 			mainGroup = 7B0903B52E321EFE00618EA0;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				7B810DF62E38E3E0002505A7 /* XCRemoteSwiftPackageReference "swift-openapi-runtime" */,
+				7B810DF92E38E3FC002505A7 /* XCRemoteSwiftPackageReference "swift-openapi-urlsession" */,
+				7B899CF22E39130400654DCB /* XCRemoteSwiftPackageReference "swift-openapi-generator" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 7B0903BF2E321EFE00618EA0 /* Products */;
 			projectDirPath = "";
@@ -265,6 +342,10 @@
 			isa = PBXTargetDependency;
 			target = 7B0903BD2E321EFE00618EA0 /* TravelSchedule */;
 			targetProxy = 7B0903D62E321F0000618EA0 /* PBXContainerItemProxy */;
+		};
+		7B899D222E39146300654DCB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 7B899D212E39146300654DCB /* OpenAPIGenerator */;
 		};
 /* End PBXTargetDependency section */
 
@@ -395,16 +476,20 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = TQ873YGCDK;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TravelSchedule/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Расписание Путешествий";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Мы используем ваше местоположение, чтобы показать ближайшие станции\nМы используем ваше местоположение, чтобы показать ближайшие станции\nМы используем ваше местоположение, чтобы показать ближайшие станции\nМы используем ваше местоположение, чтобы показать ближайшие станции\n";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -420,6 +505,7 @@
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -430,16 +516,20 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = TQ873YGCDK;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TravelSchedule/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Расписание Путешествий";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Мы используем ваше местоположение, чтобы показать ближайшие станции\nМы используем ваше местоположение, чтобы показать ближайшие станции\nМы используем ваше местоположение, чтобы показать ближайшие станции\nМы используем ваше местоположение, чтобы показать ближайшие станции\n";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -455,6 +545,7 @@
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -572,6 +663,51 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		7B810DF62E38E3E0002505A7 /* XCRemoteSwiftPackageReference "swift-openapi-runtime" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-openapi-runtime/";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.8.2;
+			};
+		};
+		7B810DF92E38E3FC002505A7 /* XCRemoteSwiftPackageReference "swift-openapi-urlsession" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-openapi-urlsession";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.0;
+			};
+		};
+		7B899CF22E39130400654DCB /* XCRemoteSwiftPackageReference "swift-openapi-generator" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-openapi-generator";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.10.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		7B810DF72E38E3E0002505A7 /* OpenAPIRuntime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7B810DF62E38E3E0002505A7 /* XCRemoteSwiftPackageReference "swift-openapi-runtime" */;
+			productName = OpenAPIRuntime;
+		};
+		7B810DFA2E38E3FC002505A7 /* OpenAPIURLSession */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7B810DF92E38E3FC002505A7 /* XCRemoteSwiftPackageReference "swift-openapi-urlsession" */;
+			productName = OpenAPIURLSession;
+		};
+		7B899D212E39146300654DCB /* OpenAPIGenerator */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7B899CF22E39130400654DCB /* XCRemoteSwiftPackageReference "swift-openapi-generator" */;
+			productName = "plugin:OpenAPIGenerator";
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 7B0903B62E321EFE00618EA0 /* Project object */;
 }
