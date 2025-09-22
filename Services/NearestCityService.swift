@@ -6,7 +6,7 @@ protocol NearestCityServiceProtocol {
     func getNearestCity(lat: Double, lng: Double, distance: Int) async throws -> Components.Schemas.NearestCityResponse
 }
 
-final class NearestCityService: NearestCityServiceProtocol {
+final class NearestCityService: NearestCityServiceProtocol, @unchecked Sendable {
     private let client: Client
     private let apikey: String
 

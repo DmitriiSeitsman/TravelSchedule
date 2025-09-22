@@ -1,10 +1,17 @@
 import SwiftUI
 
 struct StationScheduleView: View {
+    
     @StateObject private var viewModel: StationScheduleViewModel
     
-    init(api: YandexScheduleAPI) {
-        _viewModel = StateObject(wrappedValue: StationScheduleViewModel(api: api))
+    init(api: YandexScheduleAPI, stationCode: String, date: Date? = nil) {
+        _viewModel = StateObject(
+            wrappedValue: StationScheduleViewModel(
+                api: api,
+                stationCode: stationCode,
+                date: date
+            )
+        )
     }
     
     var body: some View {

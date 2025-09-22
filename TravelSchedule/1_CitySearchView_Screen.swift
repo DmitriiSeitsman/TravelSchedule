@@ -3,16 +3,18 @@ import SwiftUI
 struct CitySearchView: View {
     let title: String
     
-    @Binding var selection: String
+    @Binding var selection: StationSelection
     @Environment(\.dismiss) private var dismiss
-    @State private var selectedCity: City?    // для навигации
+    @State private var selectedCity: City?
     @StateObject private var vm: CitySearchViewModel
     
-    init(title: String,
-         selection: Binding<String>,
-         stationsVM: AllStationsViewModel,
-         locationService: LocationServiceProtocol,
-         api: YandexScheduleAPI) {
+    init(
+        title: String,
+        selection: Binding<StationSelection>,
+        stationsVM: AllStationsViewModel,
+        locationService: LocationServiceProtocol,
+        api: YandexScheduleAPI
+    ) {
         self.title = title
         self._selection = selection
         _vm = StateObject(wrappedValue: CitySearchViewModel(
@@ -43,16 +45,14 @@ struct CitySearchView: View {
             } else {
                 List(vm.filtered) { city in
                     Button {
-                        selection = city.title
                         selectedCity = city
                     } label: {
                         HStack {
-                            Text(city.title)
-                                .foregroundColor(.ypBlack)
+                            Text(city.title).foregroundColor(.ypBlack)
                             Spacer()
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 17))
-                                .foregroundColor(.ypBlack)
+                                .foregroundStyle(.ypBlack)
                         }
                     }
                     .buttonStyle(.plain)
@@ -106,9 +106,8 @@ struct CitySearchView: View {
                 selection: $selection
             )
         }
-        .onChange(of: selection) { _, newValue in
+        .onChange(of: selection.displayText) { _, newValue in
             if !newValue.isEmpty { dismiss() }
         }
     }
 }
-
